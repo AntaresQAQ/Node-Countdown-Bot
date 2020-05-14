@@ -1,0 +1,10 @@
+{
+    "koishi": {
+        "type": "http",
+        "port": 5002,
+        "server": "http://127.0.0.1:5001",
+        "token": "",
+        "secret": ""
+    },
+    "commandPrefix": ["--","!!"]
+}
