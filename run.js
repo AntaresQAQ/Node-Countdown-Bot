@@ -3,6 +3,7 @@ const fs = require("fs-extra");
 const fsPromise = fs.promises;
 const path = require("path");
 
+// noinspection JSUndefinedPropertyAssignment
 global.CountdownBot = {
     rootDir: __dirname,
     config: require("object-assign-deep")({}, require("./config-default.json"), require("./config.json")),
@@ -35,6 +36,7 @@ global.CountdownBot = {
             });
     },
     async run() {
+        // noinspection JSUndefinedPropertyAssignment
         global.bot = new App(this.config.koishi);
         bot.options.commandPrefix = this.config.commandPrefix;
         this.loadBase();
