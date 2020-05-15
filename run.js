@@ -62,7 +62,7 @@ global.CountdownBot = {
                 try {
                     let buff_list = [];
                     for (let command of bot._commands) {
-                        buff_list.push(command._aliases + " --- " + command._usage + "\n");
+                        buff_list.push(Buffer.from(command._aliases + " --- " + command._usage + "\n"));
                     }
                     await meta.$send(Buffer.concat(buff_list).toString());
                 } catch (e) {
