@@ -67,5 +67,5 @@ bot.command("broadcast")
 module.exports = {
     author: "Antares",
     version: 1.0,
-    description: "倒计时广播",
+    description: "倒计时广播"
 };
