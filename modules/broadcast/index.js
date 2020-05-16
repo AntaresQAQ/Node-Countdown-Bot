@@ -41,9 +41,8 @@ schedule.scheduleJob(config.cron, async () => {
     }
 });
 
-bot.command("broadcast")
+bot.groups.command("broadcast", "在当前群进行广播")
     .alias("广播")
-    .usage("在当前群进行广播")
     .action(async ({meta}) => {
         try {
             let events = config.countdowns[meta.groupId];

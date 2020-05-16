@@ -47,9 +47,9 @@ schedule.scheduleJob(config.cron, async () => {
     }
 });
 
-bot.command("hitokoto [id]")
+bot.command("hitokoto [id]", "查询一言")
     .alias("一言")
-    .usage("查询一言 | hitokoto - 随机 | hitokoto [ID] 指定ID查询")
+    .usage("hitokoto\n" + "hitokoto [ID]")
     .action(async ({meta}, id) => {
         try {
             if (id) {

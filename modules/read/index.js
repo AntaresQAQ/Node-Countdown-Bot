@@ -13,8 +13,8 @@ const util = require("util");
 const client = new AipSpeechClient(config.app_id, config.api_key, config.secret_key);
 
 
-bot.command('read <text...>')
-    .usage("文字转语音 | read [文字]")
+bot.groups.plus(bot.discusses).command('read <text...>', "文字转语音")
+    .usage("read [文字]")
     .action(async ({meta}, text) => {
         try {
             if (!await bot.sender.canSendRecord()) {

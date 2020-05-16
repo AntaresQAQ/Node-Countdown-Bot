@@ -5,9 +5,9 @@ const configDefault = {
 const config = CountdownBot.loadConfig(__dirname, configDefault) || configDefault;
 const qrCode = require("bluebird").promisifyAll(require("qrcode"));
 
-bot.command("qrcode <text...>")
+bot.command("qrcode <text...>", "生成二维码")
     .alias("二维码")
-    .usage("生成二维码 | qrcode [内容]")
+    .usage("qrcode [内容]")
     .action(async ({meta}, text) => {
         try {
             if (!await bot.sender.canSendImage()) {
