@@ -7,8 +7,7 @@ const objectAssignDeep = require("object-assign-deep");
 // noinspection JSUndefinedPropertyAssignment
 global.CountdownBot = {
     rootDir: __dirname,
-    config: objectAssignDeep({}, require("./config-default.json"), require("./config.json")),
-    plugins: {},
+    modules: {},
     log(msg, sender) {
         if (sender) sender(msg.toString());
         console.log(msg);
@@ -21,61 +20,25 @@ global.CountdownBot = {
             return defaultConfig;
         }
     },
-    async loadPlugins() {
+    async loadModules() {
         try {
-            let files = await fs.readdirSync(path.join(__dirname, "plugins"));
+            let files = await fs.readdirSync(path.join(__dirname, "modules"));
             files.filter(async (file) => (
-                await fsPromise.stat(path.join(__dirname, "plugins", file))).isDirectory()).forEach((file) => {
-                this.plugins[file] = require(path.join(__dirname, "plugins", file, "plugin.js"));
+                await fsPromise.stat(path.join(__dirname, "modules", file))).isDirectory()).forEach((file) => {
+                this.modules[file] = require(path.join(__dirname, "modules", file));
                 console.log("Load plugin " + file + " " +
-                    this.plugins[file].version.toFixed(1) + " succeed");
+                    this.modules[file].version.toFixed(1) + " succeed");
             });
         } catch (e) {
             console.error(e);
         }
     },
-    loadBase() {
-        bot.command("plugins")
-            .usage("查看插件列表")
-            .alias("插件")
-            .action(async ({meta}) => {
-                try {
-                    let buff_list = [];
-                    for (let pluginName in this.plugins) {
-                        let plugin = this.plugins[pluginName];
-                        buff_list.push(Buffer.from(
-                            pluginName + " " + plugin.version.toFixed(1) + "\n" +
-                            "作者: " + plugin.author + "\n" +
-                            "描述: " + plugin.description + "\n\n"
-                        ));
-                    }
-                    await meta.$send(Buffer.concat(buff_list).toString());
-                } catch (e) {
-                    this.log(e, meta.$send);
-                }
-
-            });
-        bot.command("help")
-            .usage("查看帮助")
-            .alias("帮助")
-            .action(async ({meta}) => {
-                try {
-                    let buff_list = [];
-                    for (let command of bot._commands) {
-                        buff_list.push(Buffer.from(command._aliases + " --- " + command._usage + "\n"));
-                    }
-                    await meta.$send(Buffer.concat(buff_list).toString());
-                } catch (e) {
-                    this.log(e, meta.$send);
-                }
-            });
-    },
     async run() {
+        this.config = this.loadConfig(__dirname, require("./config-default.json"));
         // noinspection JSUndefinedPropertyAssignment
         global.bot = new App(this.config.koishi);
         bot.options.commandPrefix = this.config.commandPrefix;
-        this.loadBase();
-        await this.loadPlugins();
+        await this.loadModules();
         await bot.start();
         console.log("Countdown-Bot started succeed!");
     }
