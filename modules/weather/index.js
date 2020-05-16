@@ -6,7 +6,7 @@ const config = CountdownBot.loadConfig(__dirname, configDefault);
 const requestPromise = require("request-promise");
 
 async function getWeatherData(location, type1, type2) {
-    let result = await requestPromise({
+    let result = await requestPromise.get({
         uri: `https://free-api.heweather.net/s6/${type1}/${type2}`,
         qs: {
             location: location,
