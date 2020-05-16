@@ -26,8 +26,8 @@ global.CountdownBot = {
             files.filter(async (file) => (
                 await fsPromise.stat(path.join(__dirname, "modules", file))).isDirectory()).forEach((file) => {
                 this.modules[file] = require(path.join(__dirname, "modules", file));
-                console.log("Load plugin " + file + " " +
-                    this.modules[file].version.toFixed(1) + " succeed");
+                console.log("Load Module " + file + " " +
+                    this.modules[file].version.toFixed(1) + " Succeed!");
             });
         } catch (e) {
             console.error(e);

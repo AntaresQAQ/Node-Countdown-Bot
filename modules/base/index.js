@@ -8,8 +8,8 @@ const configDefault = {
 
 const config = CountdownBot.loadConfig(__dirname, configDefault);
 
-bot.command("plugins", "查看插件列表")
-    .alias("插件")
+bot.command("modules", "查看模块列表")
+    .alias("模块")
     .action(async ({meta}) => {
         try {
             let buff_list = [];
