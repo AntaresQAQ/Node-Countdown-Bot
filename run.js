@@ -2,6 +2,7 @@ const {App} = require("koishi");
 const fs = require("fs-extra");
 const fsPromise = fs.promises;
 const path = require("path");
+const util = require("util");
 const objectAssignDeep = require("object-assign-deep");
 
 // noinspection JSUndefinedPropertyAssignment
@@ -9,7 +10,7 @@ global.CountdownBot = {
     rootDir: __dirname,
     modules: {},
     log(msg, sender) {
-        if (sender) sender(msg.toString());
+        if (sender) sender(util.inspect(msg));
         console.log(msg);
     },
     loadConfig(dirname, defaultConfig) {
