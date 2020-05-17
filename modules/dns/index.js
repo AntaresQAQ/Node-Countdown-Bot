@@ -12,7 +12,7 @@ async function queryA(hostname) {
         }
         return Buffer.concat(buffers);
     } catch (e) {
-        return Buffer.from(e.toString()+"\n");
+        return Buffer.from(e.toString() + "\n");
     }
 }
 
@@ -23,7 +23,7 @@ async function queryCNAME(hostname) {
         addresses.forEach((address) => buffers.push(Buffer.from(address + "\n")));
         return Buffer.concat(buffers);
     } catch (e) {
-        return Buffer.from(e.toString()+"\n");
+        return Buffer.from(e.toString() + "\n");
     }
 
 }
@@ -36,7 +36,7 @@ async function queryMX(hostname) {
             Buffer.from(`EXC:${address.exchange} PRI:${address.priority}\n`)));
         return Buffer.concat(buffers);
     } catch (e) {
-        return Buffer.from(e.toString()+"\n");
+        return Buffer.from(e.toString() + "\n");
     }
 }
 
@@ -47,7 +47,7 @@ async function queryNS(hostname) {
         addresses.forEach((address) => buffers.push(Buffer.from(address + "\n")));
         return Buffer.concat(buffers);
     } catch (e) {
-        return Buffer.from(e.toString()+"\n");
+        return Buffer.from(e.toString() + "\n");
     }
 
 }
@@ -59,7 +59,7 @@ async function queryTXT(hostname) {
         addresses.forEach((address) => Buffer.from(address.toString()));
         return Buffer.concat(buffers);
     } catch (e) {
-        return Buffer.from(e.toString()+"\n");
+        return Buffer.from(e.toString() + "\n");
     }
 
 }
@@ -94,7 +94,7 @@ bot.command("dns <hostname> <type>", "DNS查询")
                 await meta.$send(Buffer.concat(buffers).toString());
                 return;
             }
-            if (TypesDNS[type] === undefined) throw Error("非法的查询类型");
+            if (TypesDNS[type] === undefined) throw new Error("非法的查询类型");
             await meta.$send((await TypesDNS[type].query(hostname)).toString());
         } catch (e) {
             CountdownBot.log(e, meta.$send);
