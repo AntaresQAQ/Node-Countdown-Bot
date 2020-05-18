@@ -11,9 +11,19 @@ const configDefault = {
 
 const config = CountdownBot.loadConfig(__dirname, configDefault);
 const aliyun = require("./aliyun-tts.js");
+const voices = require("./voices.json");
+
+function generateHelp() {
+    let buffers = [Buffer.from("名字 voice参数 类型 语言\n")];
+    for (let voice of voices) {
+        buffers.push(Buffer.from(`${voice.name} ${voice.voice} ${voice.type} ${voice.lang}\n`));
+    }
+    return Buffer.concat(buffers).toString();
+}
 
 bot.groups.plus(bot.discusses).command('read <text...>', "文字转语音")
     .usage("read [文字]")
+    .option("-l,--list", "查看支持的voice列表", {})
     .option("-v, --voice <voice>",
         "声色 https://help.aliyun.com/document_detail/84435.html", {
             isString: true,
@@ -22,6 +32,10 @@ bot.groups.plus(bot.discusses).command('read <text...>', "文字转语音")
     .option("-r,--rate <rate>", "语速 0(slow)~1000(quick)", {default: config.speech_rate + 500})
     .action(async ({meta, options}, text) => {
         try {
+            if (options.list) {
+                await meta.$send(generateHelp());
+                return;
+            }
             if (!await bot.sender.canSendRecord()) throw new ErrorMsg("您的CoolQ不支持发送语音", meta);
             if (text.length > config.maxLength) throw new ErrorMsg("字符串长度超过限制", meta);
             let result = await aliyun.getVoice(text, config.appKey, config.token.Id, {

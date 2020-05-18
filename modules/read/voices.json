@@ -1,0 +1,272 @@
+[
+    {
+        "name": "小云",
+        "voice": "Xiaoyun",
+        "type": "标准女声",
+        "lang": "zh/en"
+    },
+    {
+        "name": "小刚",
+        "voice": "Xiaogang",
+        "type": "标准男声",
+        "lang": "zh/en"
+    },
+    {
+        "name": "若兮",
+        "voice": "Ruoxi",
+        "type": "温柔女声",
+        "lang": "zh/en"
+    },
+    {
+        "name": "思琪",
+        "voice": "Siqi",
+        "type": "温柔女声",
+        "lang": "zh/en"
+    },
+    {
+        "name": "思佳",
+        "voice": "Sijia",
+        "type": "标准女声",
+        "lang": "zh/en"
+    },
+    {
+        "name": "思诚",
+        "voice": "Sicheng",
+        "type": "标准男声",
+        "lang": "zh/en"
+    },
+    {
+        "name": "艾琪",
+        "voice": "Aiqi",
+        "type": "温柔女声",
+        "lang": "zh/en"
+    },
+    {
+        "name": "艾佳",
+        "voice": "Aijia",
+        "type": "标准女声",
+        "lang": "zh/en"
+    },
+    {
+        "name": "艾诚",
+        "voice": "Aicheng",
+        "type": "标准男声",
+        "lang": "zh/en"
+    },
+    {
+        "name": "艾达",
+        "voice": "Aida",
+        "type": "标准男声",
+        "lang": "zh/en"
+    },
+    {
+        "name": "宁儿",
+        "voice": "Ninger",
+        "type": "标准女声",
+        "lang": "zh"
+    },
+    {
+        "name": "瑞琳",
+        "voice": "Ruilin",
+        "type": "标准女声",
+        "lang": "zh"
+    },
+    {
+        "name": "思悦",
+        "voice": "Siyue",
+        "type": "温柔女声",
+        "lang": "zh/en"
+    },
+    {
+        "name": "艾雅",
+        "voice": "Aiya",
+        "type": "严厉女声",
+        "lang": "zh/en"
+    },
+    {
+        "name": "艾夏",
+        "voice": "Aixia",
+        "type": "亲和女声",
+        "lang": "zh/en"
+    },
+    {
+        "name": "艾美",
+        "voice": "Aimei",
+        "type": "甜美女声",
+        "lang": "zh/en"
+    },
+    {
+        "name": "艾雨",
+        "voice": "Aiyu",
+        "type": "自然女声",
+        "lang": "zh/en"
+    },
+    {
+        "name": "艾悦",
+        "voice": "Aiyue",
+        "type": "温柔女声",
+        "lang": "zh/en"
+    },
+    {
+        "name": "艾婧",
+        "voice": "Aijing",
+        "type": "严厉女声",
+        "lang": "zh/en"
+    },
+    {
+        "name": "小美",
+        "voice": "Xiaomei",
+        "type": "甜美女声",
+        "lang": "zh/en"
+    },
+    {
+        "name": "艾娜",
+        "voice": "Aina",
+        "type": "浙普女声",
+        "lang": "zh"
+    },
+    {
+        "name": "伊娜",
+        "voice": "Yina",
+        "type": "浙普女声",
+        "lang": "zh"
+    },
+    {
+        "name": "思婧",
+        "voice": "Sijing",
+        "type": "严厉女声",
+        "lang": "zh"
+    },
+    {
+        "name": "思彤",
+        "voice": "Sitong",
+        "type": "儿童音",
+        "lang": "zh"
+    },
+    {
+        "name": "小北",
+        "voice": "Xiaobei",
+        "type": "萝莉女声",
+        "lang": "zh"
+    },
+    {
+        "name": "艾彤",
+        "voice": "Aitong",
+        "type": "儿童音",
+        "lang": "zh"
+    },
+    {
+        "name": "艾薇",
+        "voice": "Aiwei",
+        "type": "萝莉女声",
+        "lang": "zh"
+    },
+    {
+        "name": "艾宝",
+        "voice": "Aibao",
+        "type": "萝莉女声",
+        "lang": "zh"
+    },
+    {
+        "name": "Harry",
+        "voice": "Harry",
+        "type": "英音男声",
+        "lang": "en"
+    },
+    {
+        "name": "Abby",
+        "voice": "Abby",
+        "type": "美音女声",
+        "lang": "en"
+    },
+    {
+        "name": "Andy",
+        "voice": "Andy",
+        "type": "美音男声",
+        "lang": "en"
+    },
+    {
+        "name": "Eric",
+        "voice": "Eric",
+        "type": "英音男声",
+        "lang": "en"
+    },
+    {
+        "name": "Emily",
+        "voice": "Emily",
+        "type": "英音女声",
+        "lang": "en"
+    },
+    {
+        "name": "Luna",
+        "voice": "Luna",
+        "type": "英音女声",
+        "lang": "en"
+    },
+    {
+        "name": "Luca",
+        "voice": "Luca",
+        "type": "英音男声",
+        "lang": "en"
+    },
+    {
+        "name": "Wendy",
+        "voice": "Wendy",
+        "type": "英音女声",
+        "lang": "en"
+    },
+    {
+        "name": "William",
+        "voice": "William",
+        "type": "英音男声",
+        "lang": "en"
+    },
+    {
+        "name": "Olivia",
+        "voice": "Olivia",
+        "type": "英音女声",
+        "lang": "en"
+    },
+    {
+        "name": "姗姗",
+        "voice": "Shanshan",
+        "type": "粤语女声",
+        "lang": "zh/en"
+    },
+    {
+        "name": "小玥",
+        "voice": "Xiaoyue",
+        "type": "四川话女声",
+        "lang": "zh/en"
+    },
+    {
+        "name": "Lydia",
+        "voice": "Lydia",
+        "type": "英中双语女声",
+        "lang": "en"
+    },
+    {
+        "name": "艾硕",
+        "voice": "Aishuo",
+        "type": "自然男声",
+        "lang": "en"
+    },
+    {
+        "name": "青青",
+        "voice": "Qingqing",
+        "type": "台湾话女声",
+        "lang": "zh"
+    },
+    {
+        "name": "翠姐",
+        "voice": "Cuijie",
+        "type": "东北话女声",
+        "lang": "zh"
+    },
+    {
+        "name": "小泽",
+        "voice": "Xiaoze",
+        "type": "湖南重口音男声",
+        "lang": "zh"
+    }
+]
