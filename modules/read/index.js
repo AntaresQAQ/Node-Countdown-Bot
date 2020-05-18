@@ -1,41 +1,52 @@
 const configDefault = {
-    max_length: 300, // String length limit
-    app_id: "", // Baidu AI Apps
-    api_key: "",
-    secret_key: "",
-    volume: 8, // Volume 1(low)-10(high)
-    speed: 4 //Speech rate 1(slow)-10(quick)
+    maxLength: 300, // String length limit (1 - 300)
+    appKey: "", // Aliyun Apps
+    accessKeyId: "",
+    accessKeySecret: "",
+    voice: "Sitong", // https://help.aliyun.com/document_detail/84435.html
+    volume: 50, // Volume 0(low) - 100(high)
+    speech_rate: 0, //Speech rate -500(slow) - 500(quick)
+    pitch_rate: 0 //Pitch rate -500(low) - 500(high)
 };
 
 const config = CountdownBot.loadConfig(__dirname, configDefault);
-const AipSpeechClient = require("baidu-aip-sdk").speech;
-const util = require("util");
-const client = new AipSpeechClient(config.app_id, config.api_key, config.secret_key);
-
+const aliyun = require("./aliyun-tts.js");
 
 bot.groups.plus(bot.discusses).command('read <text...>', "文字转语音")
     .usage("read [文字]")
-    .action(async ({meta}, text) => {
+    .option("-v, --voice <voice>",
+        "声色 https://help.aliyun.com/document_detail/84435.html", {
+            isString: true,
+            default: config.voice
+        })
+    .option("-r,--rate <rate>", "语速 0(slow)~1000(quick)", {default: config.speech_rate + 500})
+    .action(async ({meta, options}, text) => {
         try {
-            if (!await bot.sender.canSendRecord()) {
-                await meta.$send("您的CoolQ不支持发送语音");
-                return;
-            }
-            if (text.length > config.max_length) {
-                await meta.$send("字符串长度超过限制");
-                return;
-            }
-            let result = await client.text2audio(text, {
-                spd: config.speed,
-                per: 4,
-                vol: config.volume,
+            if (!await bot.sender.canSendRecord()) throw new ErrorMsg("您的CoolQ不支持发送语音", meta);
+            if (text.length > config.maxLength) throw new ErrorMsg("字符串长度超过限制", meta);
+            let result = await aliyun.getVoice(text, config.appKey, config.token.Id, {
+                voice: options.voice,
+                volume: config.volume,
+                speech_rate: options.rate - 500,
+                pitch_rate: config.pitch_rate
             });
-            if (!(result.data instanceof Buffer)) throw Error(util.inspect(result.data));
-            await meta.$send(`[CQ:record,file=base64://${result.data.toString("base64")}]`);
+            if (!(result instanceof Buffer)) throw new ErrorMsg(result, meta);
+            await meta.$send(`[CQ:record,file=base64://${result.toString("base64")}]`);
         } catch (e) {
-            CountdownBot.log(e, meta.$send)
+            CountdownBot.log(e)
         }
     });
+
+(async function setToken() {
+    try {
+        config.token = await aliyun.getToken(config.accessKeyId, config.accessKeySecret);
+        console.log("Get Aliyun Token Succeed!");
+        let timeout = parseInt(config.token.ExpireTime) * 1000 - Date.now() - 60000;
+        setTimeout(setToken, timeout);
+    } catch (e) {
+        console.error("Get Aliyun Token Failed, Check Your AccessKey!");
+    }
+})().catch(console.error);
 
 module.exports = {
     author: "Antares",
