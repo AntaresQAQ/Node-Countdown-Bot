@@ -35,13 +35,6 @@ async function getVoice(text, appKey, token, options) {
     }
 }
 
-/*
-(async () => {
-    let key = await getToken("LTAI4GJj1wLicQbsAJNjNEKT", "4uezYdniXr3OMBvD0U8r0bfEHdDx5T");
-    let result = await getVoice("喵", "69CjYDhYXrwWvzMf", key.Id, {});
-    console.log(result);
-})();
-*/
 module.exports = {
     getVoice: getVoice,
     getToken: getToken
