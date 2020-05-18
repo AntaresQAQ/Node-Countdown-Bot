@@ -25,8 +25,7 @@ function generateHelp() {
 bot.groups.plus(bot.discusses).command('read <text...>', "文字转语音")
     .usage("read [文字]")
     .option("-l,--list", "查看支持的声色列表", {})
-    .option("-v, --voice <voice>",
-        "声色，使用-l,--list参数查看声色列表", {
+    .option("-v, --voice <voice>", "声色，使用-l,--list参数查看声色列表", {
             isString: true,
             default: config.voice
         })
