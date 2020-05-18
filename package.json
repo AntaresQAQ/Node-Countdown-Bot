@@ -7,7 +7,7 @@
   "author": "Antares <antares.oier@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "baidu-aip-sdk": "^2.4.6",
+    "@alicloud/pop-core": "^1.7.9",
     "bluebird": "^3.7.2",
     "cheerio": "^1.0.0-rc.3",
     "diff": "^4.0.2",
@@ -21,6 +21,7 @@
     "qrcode": "^1.4.4",
     "request": "^2.88.2",
     "request-promise": "^4.2.5",
-    "urlencode": "^1.1.0"
+    "urlencode": "^1.1.0",
+    "uuid": "^8.0.0"
   }
 }
