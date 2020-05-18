@@ -17,7 +17,7 @@ bot.command("modules", "查看模块列表")
             for (let pluginName in plugins) {
                 let plugin = plugins[pluginName];
                 buff_list.push(Buffer.from(
-                    pluginName + " " + plugin.version.toFixed(1) + "\n" +
+                    pluginName + " " + plugin.version + "\n" +
                     "作者: " + plugin.author + "\n" +
                     "描述: " + plugin.description + "\n\n"
                 ));
@@ -48,6 +48,6 @@ bot.plugin(require("koishi-plugin-common"), {
 
 module.exports = {
     author: "Antares",
-    version: 1.0,
+    version: "1.0",
     description: "bot基础功能"
 }

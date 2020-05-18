@@ -68,6 +68,6 @@ bot.groups.plus(bot.discusses).command('read <text...>', "文字转语音")
 
 module.exports = {
     author: "Antares",
-    version: 1.0,
+    version: "1.0",
     description: "文字转语音"
 };

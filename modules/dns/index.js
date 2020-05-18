@@ -103,6 +103,6 @@ bot.command("dns <hostname> <type>", "DNS查询")
 
 module.exports = {
     author: "Antares",
-    version: 1.0,
+    version: "1.0",
     description: "DNS查询"
 };

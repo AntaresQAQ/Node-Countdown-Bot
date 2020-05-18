@@ -73,6 +73,6 @@ bot.command("weather <location>", "天气查询")
 
 module.exports = {
     author: "Antares",
-    version: 1.0,
+    version: "1.0",
     description: "天气查询"
 };

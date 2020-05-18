@@ -22,6 +22,6 @@ bot.command("qrcode <text...>", "生成二维码")
 
 module.exports = {
     author: "Antares",
-    version: 1.0,
+    version: "1.0",
     description: "二维码生成器"
 };

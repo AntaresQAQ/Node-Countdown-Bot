@@ -155,6 +155,6 @@ bot.groups.plus(bot.discusses).command("music <keywords...>", "网易云音乐�
 
 module.exports = {
     author: "Antares",
-    version: 1.0,
+    version: "1.0",
     description: "网易云音乐点歌"
 };

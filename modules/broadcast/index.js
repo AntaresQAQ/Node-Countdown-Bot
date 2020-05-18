@@ -64,6 +64,6 @@ bot.groups.command("broadcast", "在当前群进行广播")
 
 module.exports = {
     author: "Antares",
-    version: 1.0,
+    version: "1.0",
     description: "倒计时广播"
 };

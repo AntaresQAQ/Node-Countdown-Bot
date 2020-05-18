@@ -20,6 +20,6 @@ bot.command("couplet <text>", "对对联")
 
 module.exports = {
     author: "Antares",
-    version: 1.0,
+    version: "1.0",
     description: "对联机"
 };

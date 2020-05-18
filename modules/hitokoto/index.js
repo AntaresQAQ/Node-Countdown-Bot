@@ -64,6 +64,6 @@ bot.command("hitokoto [id]", "查询一言")
 
 module.exports = {
     author: "Antares",
-    version: 1.0,
+    version: "1.0",
     description: "一言广播 & 查询"
 };
