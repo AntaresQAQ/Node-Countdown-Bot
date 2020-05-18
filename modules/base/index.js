@@ -3,7 +3,7 @@ const configDefault = {
     break_repeat_message: "[@] 在？为什么打断复读？",
     handleFriend: false,
     handleGroupAdd: false,
-    handleGroupInvite: false,
+    handleGroupInvite: false
 };
 
 const config = CountdownBot.loadConfig(__dirname, configDefault);
@@ -23,6 +23,21 @@ bot.command("modules", "查看模块列表")
                 ));
             }
             await meta.$send(Buffer.concat(buff_list).toString());
+        } catch (e) {
+            CountdownBot.log(e);
+        }
+    });
+
+bot.command("about", "关于")
+    .alias("关于")
+    .action(async ({meta}) => {
+        try {
+            await meta.$send("[CQ:share," +
+                "url=https://github.com/AntaresQAQ/Node-Countdown-Bot," +
+                "title=Node-Countdown-Bot," +
+                "content=AntaresQAQ/Node-Countdown-Bot: Node.js的Countdown-Bot," +
+                "image=https://github.com/fluidicon.png]"
+            );
         } catch (e) {
             CountdownBot.log(e);
         }
