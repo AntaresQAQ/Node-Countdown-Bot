@@ -24,7 +24,7 @@ bot.command("modules", "查看模块列表")
             }
             await meta.$send(Buffer.concat(buff_list).toString());
         } catch (e) {
-            CountdownBot.log(e, meta.$send);
+            CountdownBot.log(e);
         }
     });
 

@@ -58,7 +58,7 @@ bot.command("hitokoto [id]", "查询一言")
                 await meta.$send(await fetchRandomHitokoto());
             }
         } catch (e) {
-            CountdownBot.log(e, meta.$send);
+            CountdownBot.log(e);
         }
     });
 

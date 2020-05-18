@@ -14,10 +14,9 @@ bot.command("couplet <text>", "对对联")
             });
             await meta.$send("上联：" + text + "\n下联：" + result.output);
         } catch (e) {
-            CountdownBot.log(e, meta.$send);
+            CountdownBot.log(e);
         }
     });
-
 
 module.exports = {
     author: "Antares",

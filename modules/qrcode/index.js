@@ -10,18 +10,12 @@ bot.command("qrcode <text...>", "生成二维码")
     .usage("qrcode [内容]")
     .action(async ({meta}, text) => {
         try {
-            if (!await bot.sender.canSendImage()) {
-                await meta.$send("您的CoolQ不支持发送图片");
-                return;
-            }
-            if (text.length > config.max_length) {
-                await meta.$send("字符串长度超过限制");
-                return;
-            }
+            if (!await bot.sender.canSendImage()) throw new ErrorMsg("您的CoolQ不支持发送图片", meta);
+            if (text.length > config.max_length) throw new ErrorMsg("字符串长度超过限制", meta);
             let result = (await qrCode.toDataURLAsync(text)).split(",")[1];
             await meta.$send(`[CQ:image,file=base64://${result}]`);
         } catch (e) {
-            CountdownBot.log(e, meta.$send)
+            CountdownBot.log(e)
         }
     });
 

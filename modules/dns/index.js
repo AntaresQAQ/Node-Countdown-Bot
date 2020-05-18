@@ -94,13 +94,12 @@ bot.command("dns <hostname> <type>", "DNS查询")
                 await meta.$send(Buffer.concat(buffers).toString());
                 return;
             }
-            if (TypesDNS[type] === undefined) throw new Error("非法的查询类型");
+            if (TypesDNS[type] === undefined) throw new ErrorMsg("非法的查询类型", meta);
             await meta.$send((await TypesDNS[type].query(hostname)).toString());
         } catch (e) {
-            CountdownBot.log(e, meta.$send);
+            CountdownBot.log(e);
         }
     });
-
 
 module.exports = {
     author: "Antares",

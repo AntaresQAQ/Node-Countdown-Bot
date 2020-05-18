@@ -93,31 +93,23 @@ bot.groups.plus(bot.discusses).command("music <keywords...>", "网易云音乐�
         {default: "record", isString: true})
     .action(async ({meta, options}, keywords) => {
         try {
-            if (await checkLoginStatus() === false) throw new Error("网易云账号登陆失败！");
+            if (await checkLoginStatus() === false) throw new ErrorMsg("网易云账号登陆失败！", meta);
             let type = (() => {
                 if (options.type !== "record" &&
                     options.type !== "raw" &&
-                    options.type !== "link") throw new Error("非法的返回类型");
+                    options.type !== "link") throw new ErrorMsg("非法的返回类型", meta);
                 return options.type;
             })();
-            if (type === "record" && !await bot.sender.canSendRecord()) {
-                await meta.$send("您的CoolQ不支持发送语音");
-                return;
-            }
+            if (type === "record" && !await bot.sender.canSendRecord())
+                throw new ErrorMsg("您的CoolQ不支持发送语音", meta);
             if (options.id) {
                 let id = parseInt(keywords);
-                if (!await checkMusicAvailable(id)) {
-                    await meta.$send("id对应的音乐不存在或无版权");
-                    return;
-                }
+                if (!await checkMusicAvailable(id)) throw new ErrorMsg("id对应的音乐不存在或无版权", meta);
                 if (type === "raw") {
                     await meta.$send(`[CQ:music,type=163,id=${id}]`);
                 } else {
                     let url = await getMusicUrl(id);
-                    if (!url) {
-                        await meta.$send("无法取得音乐链接，请检查是否为VIP歌曲");
-                        return;
-                    }
+                    if (!url) throw new ErrorMsg("无法取得音乐链接，请检查是否为VIP歌曲", meta);
                     if (type === "link") {
                         await meta.$send(url);
                     } else if (type === "record") {
@@ -127,10 +119,7 @@ bot.groups.plus(bot.discusses).command("music <keywords...>", "网易云音乐�
                 return;
             }
             let musics = await searchMusic(keywords);
-            if (!musics) {
-                await meta.$send("您搜索的歌曲不存在");
-                return;
-            }
+            if (!musics) throw new ErrorMsg("您搜索的歌曲不存在", meta);
             for (let music of musics) {
                 let id = music.id;
                 if (await checkMusicAvailable(id)) {
@@ -148,21 +137,21 @@ bot.groups.plus(bot.discusses).command("music <keywords...>", "网易云音乐�
                     return;
                 }
             }
-            await meta.$send("您搜索的歌曲可能不存在、无版权或为VIP歌曲");
+            throw new ErrorMsg("您搜索的歌曲可能不存在、无版权或为VIP歌曲", meta);
         } catch (e) {
-            CountdownBot.log(e, meta.$send);
+            CountdownBot.log(e);
         }
     });
 
 (async () => {
     if (config.phone || config.email) {
         if (await login()) {
-            console.log("网易云音乐账号登陆成功");
+            console.log("Cloudmusic Account Login Succeed!");
         } else {
-            console.error("网易云账号登陆失败, 请检查账号密码！")
+            console.error("Cloudmusic Account Login Failed, Check Your Account Id and Password");
         }
     }
-})().catch(console.log);
+})().catch(console.error);
 
 module.exports = {
     author: "Antares",

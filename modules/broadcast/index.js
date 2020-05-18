@@ -52,14 +52,13 @@ bot.groups.command("broadcast", "在当前群进行广播")
                 let time = new Date(event.time);
                 let delta = Math.ceil(moment(time).diff(now, "days", true));
                 if (delta < 0) continue;
-                let msg = () => {
-                    if (delta) return `距离 ${event.name}(${moment(time).format('YYYY-MM-DD')}) 还有 ${delta} 天`;
-                    else return `今天(${moment(time).format('YYYY-MM-DD')})是${event.name}`;
-                };
-                await meta.$send(msg());
+                let msg = delta ?
+                    `距离 ${event.name}(${moment(time).format('YYYY-MM-DD')}) 还有 ${delta} 天` :
+                    `今天(${moment(time).format('YYYY-MM-DD')})是${event.name}`;
+                await meta.$send(msg);
             }
         } catch (e) {
-            CountdownBot.log(e, meta.$send);
+            CountdownBot.log(e);
         }
     });
 

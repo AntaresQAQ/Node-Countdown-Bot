@@ -2,22 +2,31 @@ const {App} = require("koishi");
 const fs = require("fs-extra");
 const fsPromise = fs.promises;
 const path = require("path");
-const util = require("util");
 const objectAssignDeep = require("object-assign-deep");
+
+global.ErrorMsg = class ErrorMsg {
+    constructor(msg, meta) {
+        this.msg = msg;
+        this.meta = meta;
+    }
+}
 
 // noinspection JSUndefinedPropertyAssignment
 global.CountdownBot = {
     rootDir: __dirname,
     modules: {},
-    log(msg, sender) {
-        if (sender) sender(util.inspect(msg));
-        console.log(msg);
+    log(obj) {
+        if (obj instanceof ErrorMsg) {
+            obj.meta.$send(obj.msg).catch(console.log);
+            return;
+        }
+        console.log(obj);
     },
     loadConfig(dirname, defaultConfig) {
         try {
             return objectAssignDeep(defaultConfig, require(path.join(dirname, "config.json")));
         } catch (e) {
-            this.log(dirname + "/config.json not found, using default config");
+            console.log(dirname + "/config.json not found, using default config");
             return defaultConfig;
         }
     },

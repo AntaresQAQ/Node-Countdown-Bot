@@ -44,8 +44,8 @@ bot.command("weather <location>", "天气查询")
         try {
             let weatherNow = await getWeatherData(location, "weather", "now");
             let weatherForecast = await getWeatherData(location, "weather", "forecast");
-            if (weatherNow.status !== "ok") throw weatherNow.status;
-            if (weatherForecast.status !== "ok") throw weatherForecast.status;
+            if (weatherNow.status !== "ok") throw new ErrorMsg(weatherNow.status, meta);
+            if (weatherForecast.status !== "ok") throw new ErrorMsg(weatherForecast.status, meta);
             let airNow = await getWeatherData(weatherNow['basic']['parent_city'], "air", "now");
             let buffer_list = [
                 Buffer.from(generateLocation(weatherNow['basic'])),
@@ -67,7 +67,7 @@ bot.command("weather <location>", "天气查询")
             }
             await meta.$send(Buffer.concat(buffer_list).toString());
         } catch (e) {
-            CountdownBot.log(e, meta.$send);
+            CountdownBot.log(e);
         }
     });
 
