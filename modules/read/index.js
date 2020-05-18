@@ -11,7 +11,8 @@ const configDefault = {
 
 const config = CountdownBot.loadConfig(__dirname, configDefault);
 const aliyun = require("./aliyun-tts.js");
-const voices = require("./voices.json");
+const voices = require("./voices.json") || [];
+const voiceSet = new Set(voices.map(voice => voice.voice));
 
 function generateHelp() {
     let buffers = [Buffer.from("名字 voice参数 类型 语言\n")];
@@ -38,10 +39,14 @@ bot.groups.plus(bot.discusses).command('read <text...>', "文字转语音")
             }
             if (!await bot.sender.canSendRecord()) throw new ErrorMsg("您的CoolQ不支持发送语音", meta);
             if (text.length > config.maxLength) throw new ErrorMsg("字符串长度超过限制", meta);
+            let speechRate = parseInt(options.rate);
+            if (isNaN(speechRate)) throw new ErrorMsg("请检查参数rate值是否为数字范围内", meta)
+            if (speechRate < 0 || speechRate > 1000) throw new ErrorMsg("请检查参数rate值是否在0~1000范围内", meta);
+            if (!voiceSet.has(options.voice)) throw new ErrorMsg("未知的Voice", meta);
             let result = await aliyun.getVoice(text, config.appKey, config.token.Id, {
                 voice: options.voice,
                 volume: config.volume,
-                speech_rate: options.rate - 500,
+                speech_rate: speechRate - 500,
                 pitch_rate: config.pitch_rate
             });
             if (!(result instanceof Buffer)) throw new ErrorMsg(result, meta);
