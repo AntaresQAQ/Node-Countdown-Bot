@@ -51,6 +51,7 @@ bot.plugin(require("koishi-plugin-common"), {
     echo: false,
     exec: false,
     exit: false,
+    welcomeMessage: false,
     repeater: {
         repeat: (repeated, times) => times === config.repeat_times,
         interruptCheck: (repeated, times) => repeated && times >= 5 && config.break_repeat_message,
