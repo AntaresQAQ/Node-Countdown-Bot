@@ -2,7 +2,7 @@ const requestPromise = require("request-promise");
 
 
 bot.command("oier <name...>")
-    .usage("oier [名字/缩写]")
+    .usage("oier [关键词]")
     .action(async ({meta}, name) => {
         try {
             let result = await requestPromise({
