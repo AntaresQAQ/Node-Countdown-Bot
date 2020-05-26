@@ -28,7 +28,7 @@ bot.command("modules", "查看模块列表")
         }
     });
 
-bot.command("about", "关于")
+bot.command("about", "关于", {authority: 0})
     .alias("关于")
     .action(async ({meta}) => {
         try {
