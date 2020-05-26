@@ -6,7 +6,8 @@ const configDefault = {
     voice: "Sitong", // https://help.aliyun.com/document_detail/84435.html
     volume: 50, // Volume 0(low) - 100(high)
     speech_rate: 0, //Speech rate -500(slow) - 500(quick)
-    pitch_rate: 0 //Pitch rate -500(low) - 500(high)
+    pitch_rate: 0, //Pitch rate -500(low) - 500(high)
+    inactive_groups: []
 };
 
 const config = CountdownBot.loadConfig(__dirname, configDefault);
@@ -22,7 +23,8 @@ function generateHelp() {
     return Buffer.concat(buffers).toString();
 }
 
-bot.groups.plus(bot.discusses).command('read <text...>', "文字转语音")
+bot.groups.except(config.inactive_groups).plus(bot.discusses)
+    .command('read <text...>', "文字转语音")
     .usage("read [文字]")
     .option("-l,--list", "查看支持的声色列表", {})
     .option("-v, --voice <voice>", "声色，使用-l,--list参数查看声色列表", {

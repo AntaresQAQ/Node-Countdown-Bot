@@ -3,7 +3,8 @@ const configDefault = {
     search_limit: 10,
     phone: undefined,
     email: undefined,
-    password: "123456789"
+    password: "123456789",
+    inactive_groups: []
 };
 
 const config = CountdownBot.loadConfig(__dirname, configDefault);
@@ -85,7 +86,8 @@ async function searchMusic(keywords) {
     return res.result.songs;
 }
 
-bot.groups.plus(bot.discusses).command("music <keywords...>", "网易云音乐点歌")
+bot.groups.except(config.inactive_groups).plus(bot.discusses)
+    .command("music <keywords...>", "网易云音乐点歌")
     .alias("音乐")
     .usage("music [关键词]")
     .option("-i,--id", "指定keywords为id")
