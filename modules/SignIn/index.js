@@ -1,4 +1,5 @@
 const configDefault = {
+    NoPrefix: true,
     inactive_groups: []
 };
 
@@ -259,7 +260,7 @@ bot.groups.except(config.inactive_groups)
             if (options.month) {
                 let month = parseInt(options.month);
                 if (isNaN(month) || month < 1 || month > 12) throw new ErrorMsg("非法的月份", meta);
-                timeBegin.setMonth(month-1);
+                timeBegin.setMonth(month - 1);
             }
             if (options.year) {
                 if (!options.month) throw new ErrorMsg("指定年份必须指定月份", meta);
@@ -288,9 +289,11 @@ bot.groups.except(config.inactive_groups)
         }
     });
 
-bot.groups.except(config.inactive_groups).receiver.on("message", meta => {
-    if (meta.message === "签到") bot.runCommand("sign-in", meta);
-});
+if (config.NoPrefix) {
+    bot.groups.except(config.inactive_groups).receiver.on("message", meta => {
+        if (meta.message === "签到") bot.runCommand("sign-in", meta);
+    });
+}
 
 bot.users.command("rating", "签到积分查询")
     .alias("签到积分")
