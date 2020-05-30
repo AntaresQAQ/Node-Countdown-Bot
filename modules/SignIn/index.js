@@ -279,7 +279,7 @@ bot.groups.except(config.inactive_groups)
             buffers.push(Buffer.from(`查询到${signInData.length}条签到记录：\n`));
             buffers.push(Buffer.from("日期 时间 积分 积分变化\n"));
             signInData.forEach(data => {
-                let timeString = moment(new Date(data.time * 1000)).format("YYYY/MM/DD HH:mm:ss");
+                let timeString = moment(new Date(data.time * 1000)).format("YYYY/MM/DD HH:mm");
                 buffers.push(Buffer.from(`${timeString} ${data.score} +${data.scoreChanges}\n`));
             });
             await meta.$send(Buffer.concat(buffers).toString());
@@ -296,7 +296,13 @@ bot.users.command("rating", "签到积分查询")
     .alias("签到积分")
     .action(async ({meta}) => {
         try {
-
+            let userData = await getUserData(meta.userId);
+            let buffers = [Buffer.from(`查询到您在${userData.length}个群有签到记录:\n`)];
+            for (let data of userData) {
+                let groupInfo = await bot.sender.getGroupInfo(data.groupId);
+                buffers.push(Buffer.from(`在 [${groupInfo.groupName}](${groupInfo.groupId}) 积分为: ${data.score}\n`))
+            }
+            await meta.$send(Buffer.concat(buffers).toString());
         } catch (e) {
             CountdownBot.log(e);
         }
