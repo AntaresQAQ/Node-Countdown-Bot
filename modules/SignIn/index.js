@@ -259,7 +259,7 @@ bot.groups.except(config.inactive_groups)
             if (options.month) {
                 let month = parseInt(options.month);
                 if (isNaN(month) || month < 1 || month > 12) throw new ErrorMsg("非法的月份", meta);
-                timeBegin.setMonth(month);
+                timeBegin.setMonth(month-1);
             }
             if (options.year) {
                 if (!options.month) throw new ErrorMsg("指定年份必须指定月份", meta);
