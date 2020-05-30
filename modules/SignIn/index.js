@@ -7,6 +7,7 @@ const config = CountdownBot.loadConfig(__dirname, configDefault);
 const path = require("path");
 const Promise = require("bluebird");
 const sqlite3 = require("sqlite3").verbose();
+const moment = require("moment");
 const db = new sqlite3.Database(path.join(CountdownBot.dataDir, "sign-in.db"))
 
 class SignInData {
@@ -151,20 +152,44 @@ function saveSignInData(signInData) {
     });
 }
 
-
+function getSignInData(timeBegin, timeEnd, groupId, userId) {
+    return new Promise((resolve, reject) => {
+        if (userId) {
+            db.all("SELECT * FROM SIGN_IN WHERE GROUP_ID = ? AND USER_ID = ? AND TIME >= ? AND TIME <= ?",
+                [groupId, userId, timeBegin, timeEnd], (err, rows) => {
+                    if (err) reject(err);
+                    else resolve(rows.map((row) => new SignInData(
+                        groupId,
+                        userId,
+                        row["TIME"],
+                        row["DURATION"],
+                        row["SCORE"],
+                        row["SCORE_CHANGES"]
+                    )));
+                });
+        } else {
+            db.all("SELECT * FROM SIGN_IN WHERE GROUP_ID = ? AND TIME >= ? AND TIME < ?",
+                [groupId, timeBegin, timeEnd], (err, rows) => {
+                    if (err) reject(err);
+                    else resolve(rows.map((row) => new SignInData(
+                        groupId,
+                        row["USER_ID"],
+                        row["TIME"],
+                        row["DURATION"],
+                        row["SCORE"],
+                        row["SCORE_CHANGES"]
+                    )));
+                });
+        }
+    });
+}
 
 function getUserData(userId) {
     return new Promise((resolve, reject) => {
         db.all("SELECT * FROM USERS WHERE USER_ID = ?", [userId],
             (err, rows) => {
                 if (err) reject(err);
-                else {
-                    let data = [];
-                    for (let row of rows) {
-                        result.push(new UserData(row["GROUP_ID"], userId, row["SCORE"]));
-                    }
-                    resolve(data);
-                }
+                else resolve(rows.map(row => new UserData(row["GROUP_ID"], userId, row["SCORE"])));
             });
     });
 }
@@ -173,59 +198,91 @@ bot.groups.except(config.inactive_groups)
     .command("sign-in", "签到")
     .alias("签到")
     .action(async ({meta}) => {
-        try {
-            let groupId = meta.groupId;
-            let userId = meta.userId;
-            let lastSignInData = await getLastSignInData(groupId, userId);
-            let lastTime = new Date(lastSignInData.time * 1000);
-            let currentTime = new Date();
-            let totalTimes = await calcTotalSignInTimes(groupId, userId);
-            let monthTimes = await calcMonthSignInTimes(groupId, userId);
+            try {
+                let groupId = parseInt(meta.groupId);
+                let userId = parseInt(meta.userId);
+                let lastSignInData = await getLastSignInData(groupId, userId);
+                let lastTime = new Date(lastSignInData.time * 1000);
+                let currentTime = new Date();
+                let totalTimes = await calcTotalSignInTimes(groupId, userId);
+                let monthTimes = await calcMonthSignInTimes(groupId, userId);
 
-            if (lastTime.getFullYear() === currentTime.getFullYear() &&
-                lastTime.getDay() === currentTime.getDay()) {
-                let msg = `[CQ:at,qq=${userId}]今天已经签过到啦！
+                if (lastTime.getFullYear() === currentTime.getFullYear() &&
+                    lastTime.getMonth() === currentTime.getMonth() &&
+                    lastTime.getDate() === currentTime.getDate()) {
+                    let msg = `[CQ:at,qq=${userId}]今天已经签过到啦！
 连续签到：${lastSignInData.duration}天
 当前积分：${lastSignInData.score}
 本月签到次数：${monthTimes}
 累计群签到次数：${totalTimes}`;
-                await meta.$send(msg);
-                return;
-            }
-            let signInData = new SignInData(groupId, userId, parseInt(currentTime.getTime() / 1000));
-            console.log(signInData.duration);
-            if (lastTime.getFullYear() === currentTime.getFullYear()) {
-                if (lastTime.getDay() + 1 === currentTime.getDay())
+                    await meta.$send(msg);
+                    return;
+                }
+                let signInData = new SignInData(groupId, userId, parseInt(currentTime.getTime() / 1000));
+
+                let tomorrowTime = new Date(lastTime.getFullYear(),
+                    lastTime.getMonth(), lastTime.getDate() + 1);
+                if (tomorrowTime.getFullYear() === currentTime.getFullYear() &&
+                    tomorrowTime.getMonth() === currentTime.getMonth() &&
+                    tomorrowTime.getDate() === currentTime.getDate())
                     signInData.duration = lastSignInData.duration + 1;
-                else signInData.duration = 1;
-            } else if (lastTime.getFullYear() + 1 === currentTime.getFullYear()) {
-                if (lastTime.getMonth() === 12 && lastTime.getDate() === 31 && currentTime.getDay() === 1)
-                    signInData.duration = lastSignInData.duration + 1;
-                else signInData.duration = 1;
-            } else {
-                signInData.duration = 1;
-            }
-            let durationAdd = signInData.duration <= 5 ? 0 : Math.round(2.75 * Math.log(signInData.duration - 4) - 1);
-            signInData.scoreChanges = 10 + durationAdd;
-            signInData.score = lastSignInData.score + signInData.scoreChanges;
-            saveSignInData(signInData);
-            let msg = `给[CQ:at,qq=${userId}]签到成功了！
+                else
+                    signInData.duration = 1;
+
+                let durationAdd = signInData.duration <= 5 ? 0 : Math.round(2.75 * Math.log(signInData.duration - 4) - 1);
+                signInData.scoreChanges = 10 + durationAdd;
+                signInData.score = lastSignInData.score + signInData.scoreChanges;
+                saveSignInData(signInData);
+                let msg = `给[CQ:at,qq=${userId}]签到成功了！
 连续签到：${signInData.duration}天
 积分增加：${signInData.scoreChanges}
 连续签到加成：${durationAdd}
 当前积分：${signInData.score}
 本月签到次数：${monthTimes + 1}
 累计群签到次数：${totalTimes + 1}`;
-            await meta.$send(msg);
-        } catch (e) {
-            CountdownBot.log(e);
+                await meta.$send(msg);
+            } catch
+                (e) {
+                CountdownBot.log(e);
+            }
         }
-    })
+    )
     .subcommand("sign-in-record", "签到记录查询")
     .alias("签到记录")
-    .action(async ({meta}) => {
+    .option("-m,--month <month>", "指定月份查询，默认当前月")
+    .option("-y,--year <year>", "指定年份查询，必须指定月份")
+    .action(async ({meta, options}) => {
         try {
-
+            let timeBegin = new Date();
+            timeBegin.setHours(0, 0, 0, 0);
+            timeBegin.setDate(1);
+            if (options.month) {
+                let month = parseInt(options.month);
+                if (isNaN(month) || month < 1 || month > 12) throw new ErrorMsg("非法的月份", meta);
+                timeBegin.setMonth(month);
+            }
+            if (options.year) {
+                if (!options.month) throw new ErrorMsg("指定年份必须指定月份", meta);
+                let year = parseInt(options.year);
+                if (isNaN(year)) throw new ErrorMsg("非法的年份", meta);
+                timeBegin.setFullYear(year);
+            }
+            let timeEnd = new Date(timeBegin.getFullYear(), timeBegin.getMonth() + 1);
+            let signInData = await getSignInData(
+                parseInt(timeBegin.getTime() / 1000),
+                parseInt(timeEnd.getTime() / 1000),
+                parseInt(meta.groupId),
+                parseInt(meta.userId)
+            );
+            let buffers = [];
+            buffers.push(Buffer.from(`[CQ:at,qq=${meta.userId}]\n`));
+            buffers.push(Buffer.from(`查询到${signInData.length}条签到记录：\n`));
+            buffers.push(Buffer.from("日期 时间 积分 积分变化\n"));
+            signInData.forEach(data => {
+                let timeString = moment(new Date(data.time * 1000)).format("YYYY/MM/DD HH:mm:ss");
+                buffers.push(Buffer.from(`${timeString} ${data.score} +${data.scoreChanges}\n`));
+            });
+            await meta.$send(Buffer.concat(buffers).toString());
         } catch (e) {
             CountdownBot.log(e);
         }
