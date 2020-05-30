@@ -233,7 +233,7 @@ bot.groups.except(config.inactive_groups)
                 let durationAdd = signInData.duration <= 5 ? 0 : Math.round(2.75 * Math.log(signInData.duration - 4) - 1);
                 signInData.scoreChanges = 10 + durationAdd;
                 signInData.score = lastSignInData.score + signInData.scoreChanges;
-                saveSignInData(signInData);
+                await saveSignInData(signInData);
                 let msg = `给[CQ:at,qq=${userId}]签到成功了！
 连续签到：${signInData.duration}天
 积分增加：${signInData.scoreChanges}
