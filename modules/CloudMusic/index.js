@@ -153,7 +153,10 @@ bot.groups.except(config.inactive_groups).plus(bot.discusses)
             console.error("Cloudmusic Account Login Failed, Check Your Account Id and Password");
         }
     }
-})().catch(console.error);
+})().catch((err) => {
+    console.error(err);
+    process.exit(1);
+});
 
 module.exports = {
     author: "Antares",

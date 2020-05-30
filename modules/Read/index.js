@@ -65,8 +65,12 @@ bot.groups.except(config.inactive_groups).plus(bot.discusses)
         setTimeout(setToken, timeout);
     } catch (e) {
         console.error("Get Aliyun Token Failed, Check Your AccessKey!");
+        process.exit(1);
     }
-})().catch(console.error);
+})().catch((err) => {
+    console.error(err);
+    process.exit(1);
+});
 
 module.exports = {
     author: "Antares",
