@@ -37,95 +37,25 @@ db.serialize(() => {
         "TIME          INTEGER NOT NULL," +
         "DURATION      INTEGER NOT NULL," +
         "SCORE         INTEGER NOT NULL," +
-        "SCORE_CHANGES INTEGER NOT NULL)", (err) => {
+        "SCORE_CHANGES INTEGER NOT NULL)", err => {
         if (err) {
             console.error(err);
             process.exit(1);
         }
-        db.get("SELECT COUNT(*) FROM SQLITE_MASTER WHERE TYPE = 'index' AND NAME = 'SIGN_IN_GROUP_ID_INDEX'",
-            (err, row) => {
-                if (err) {
-                    console.error(err);
-                    process.exit(1);
-                }
-                if (!row["COUNT(*)"]) {
-                    db.run("CREATE INDEX SIGN_IN_GROUP_ID_INDEX ON SIGN_IN(GROUP_ID)", (err) => {
-                        if (err) {
-                            console.error(err);
-                            process.exit(1);
-                        }
-                    });
-                }
-            });
-        db.get("SELECT COUNT(*) FROM SQLITE_MASTER WHERE TYPE = 'index' AND NAME = 'SIGN_IN_USER_ID_INDEX'",
-            (err, row) => {
-                if (err) {
-                    console.error(err);
-                    process.exit(1);
-                }
-                if (!row["COUNT(*)"]) {
-                    db.run("CREATE INDEX SIGN_IN_USER_ID_INDEX  ON SIGN_IN(USER_ID)", (err) => {
-                        if (err) {
-                            console.error(err);
-                            process.exit(1);
-                        }
-                    });
-                }
-            });
-        db.get("SELECT COUNT(*) FROM SQLITE_MASTER WHERE TYPE = 'index' AND NAME = 'SIGN_IN_TIME_INDEX'",
-            (err, row) => {
-                if (err) {
-                    console.error(err);
-                    process.exit(1);
-                }
-                if (!row["COUNT(*)"]) {
-                    db.run("CREATE INDEX SIGN_IN_TIME_INDEX     ON SIGN_IN(TIME)", (err) => {
-                        if (err) {
-                            console.error(err);
-                            process.exit(1);
-                        }
-                    });
-                }
-            });
+        db.run("CREATE INDEX IF NOT EXISTS SIGN_IN_GROUP_ID_INDEX ON SIGN_IN(GROUP_ID)");
+        db.run("CREATE INDEX IF NOT EXISTS SIGN_IN_USER_ID_INDEX  ON SIGN_IN(USER_ID)");
+        db.run("CREATE INDEX IF NOT EXISTS SIGN_IN_TIME_INDEX     ON SIGN_IN(TIME)");
     });
     db.run("CREATE TABLE IF NOT EXISTS USERS(" +
         "GROUP_ID      INTEGER NOT NULL," +
         "USER_ID       INTEGER NOT NULL," +
-        "SCORE         INTEGER NOT NULL)", (err) => {
+        "SCORE         INTEGER NOT NULL)", err => {
         if (err) {
             console.error(err);
             process.exit(1);
         }
-        db.get("SELECT COUNT(*) FROM SQLITE_MASTER WHERE TYPE = 'index' AND NAME = 'USERS_GROUP_ID_INDEX'",
-            (err, row) => {
-                if (err) {
-                    console.error(err);
-                    process.exit(1);
-                }
-                if (!row["COUNT(*)"]) {
-                    db.run("CREATE INDEX USERS_GROUP_ID_INDEX   ON USERS(GROUP_ID)", (err) => {
-                        if (err) {
-                            console.error(err);
-                            process.exit(1);
-                        }
-                    });
-                }
-            });
-        db.get("SELECT COUNT(*) FROM SQLITE_MASTER WHERE TYPE = 'index' AND NAME = 'USERS_USER_ID_INDEX'",
-            (err, row) => {
-                if (err) {
-                    console.error(err);
-                    process.exit(1);
-                }
-                if (!row["COUNT(*)"]) {
-                    db.run("CREATE INDEX USERS_USER_ID_INDEX    ON USERS(USER_ID)", (err) => {
-                        if (err) {
-                            console.error(err);
-                            process.exit(1);
-                        }
-                    });
-                }
-            });
+        db.run("CREATE INDEX IF NOT EXISTS USERS_GROUP_ID_INDEX   ON USERS(GROUP_ID)");
+        db.run("CREATE INDEX IF NOT EXISTS USERS_USER_ID_INDEX    ON USERS(USER_ID)");
     });
 });
 
@@ -192,7 +122,7 @@ function saveSignInData(signInData) {
             signInData.duration,
             signInData.score,
             signInData.scoreChanges
-        ], (err) => {
+        ], err => {
             if (err) reject(err);
             db.get("SELECT COUNT(*) FROM USERS WHERE GROUP_ID = ? AND USER_ID = ?", [
                 signInData.groupId,
