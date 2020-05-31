@@ -1,7 +1,7 @@
 const requestPromise = require("request-promise");
 
 
-bot.command("oier <name...>")
+bot.command("oier <name...>", "OIerDB(http://bytew.net/OIer)查询")
     .usage("oier [关键词]")
     .action(async ({meta}, name) => {
         try {
@@ -21,9 +21,9 @@ bot.command("oier <name...>")
                 let item = items[i];
                 buffers.push(Buffer.from(
                     `\n姓名: ${item.name}\n生理性别: ${{"-1": "女", "1": "男"}[item.sex] || "未知"}\n`));
-                for(let award of eval(item.awards)) {
+                for (let award of eval(item.awards)) {
                     buffers.push(Buffer.from(
-                        `在<${award.province}>${award.school}<${award.grade}>时参加`+
+                        `在<${award.province}>${award.school}<${award.grade}>时参加` +
                         `<${award.identity}>以${award.score}分(全国排名${award.rank})的成绩获得<${award.award_type}>\n`));
                 }
             }
