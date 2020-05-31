@@ -14,7 +14,6 @@ global.ErrorMsg = class ErrorMsg {
 // noinspection JSUndefinedPropertyAssignment
 global.CountdownBot = {
     rootDir: __dirname,
-    dataDir: path.join(__dirname, "data"),
     modules: {},
     log(obj) {
         if (obj instanceof ErrorMsg) {
@@ -45,6 +44,8 @@ global.CountdownBot = {
     },
     async run() {
         this.config = this.loadConfig(__dirname, require("./config-default.json"));
+        this.dataDir = path.join(this.rootDir, "data");
+        await fsPromise.mkdir(this.dataDir, {recursive: true});
         // noinspection JSUndefinedPropertyAssignment
         global.bot = new App(this.config.koishi);
         bot.options.commandPrefix = this.config.commandPrefix;
