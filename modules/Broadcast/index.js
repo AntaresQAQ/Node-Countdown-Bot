@@ -1,16 +1,16 @@
 const configDefault = {
     cron: "0 0 6 * * *",
     countdowns: {
-        "88888888": [
+        "group-id": [
             {
-                name: "name",
+                name: "event name",
                 time: "2020-1-1"
             }
         ]
     }
 };
-
 const config = CountdownBot.loadConfig(__dirname, configDefault);
+delete config.countdowns["group-id"];
 const schedule = require("node-schedule");
 const moment = require("moment");
 
@@ -18,7 +18,6 @@ schedule.scheduleJob(config.cron, async () => {
     try {
         let now = new Date(moment().format("YYYY-MM-DD"));
         for (let group in config.countdowns) {
-            if (group === "88888888") continue;
             try {
                 // noinspection JSUnfilteredForInLoop
                 for (let event of config.countdowns[group]) {
