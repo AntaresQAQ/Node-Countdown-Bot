@@ -1,6 +1,6 @@
 const configDefault = {
     cron: "0 0 6 * * *",
-    groups: [88888888]
+    groups: []
 };
 
 const config = CountdownBot.loadConfig(__dirname, configDefault);
