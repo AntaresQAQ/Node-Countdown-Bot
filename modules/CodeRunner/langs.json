@@ -32,7 +32,7 @@
     "ts": {
         "description": "TypeScript (Node v12)",
         "source": "app.ts",
-        "compile": "tsc app.js",
+        "compile": "tsc app.ts",
         "run": "node app.js"
     },
     "java": {
