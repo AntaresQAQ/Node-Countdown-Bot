@@ -1,18 +1,18 @@
 {
     "py": {
-        "description": "Python3",
+        "description": "Python3.8.2",
         "source": "run.py",
         "compile": null,
         "run": "python3 run.py"
     },
     "cpp": {
-        "description": "C++",
+        "description": "C++ (GCC 9.3.0)",
         "source": "std.cpp",
         "compile": "g++ std.cpp -o std",
         "run": "./std"
     },
     "c": {
-        "description": "C",
+        "description": "C (GCC 9.3.0)",
         "source": "std.c",
         "compile": "gcc std.c -o std",
         "run": "./std"
@@ -24,19 +24,19 @@
         "run": "bash run.sh"
     },
     "js": {
-        "description": "JavaScript",
+        "description": "JavaScript (Node v12)",
         "source": "app.js",
         "compile": null,
         "run": "node app.js"
     },
     "ts": {
-        "description": "TypeScript",
+        "description": "TypeScript (Node v12)",
         "source": "app.ts",
         "compile": null,
         "run": "ts-node app.ts"
     },
     "java": {
-        "description": "Java 入口类名必须为Main",
+        "description": "Java (OpenJDK 14) 入口类名必须为Main",
         "source": "Main.java",
         "compile": "javac Main.java",
         "run": "java Main"
