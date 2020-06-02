@@ -32,8 +32,8 @@
     "ts": {
         "description": "TypeScript (Node v12)",
         "source": "app.ts",
-        "compile": "tsc app.ts",
-        "run": "node app.js"
+        "compile": null,
+        "run": "ts-node --pretty false app.ts"
     },
     "java": {
         "description": "Java (OpenJDK 14) 入口类名必须为Main",
