@@ -96,6 +96,8 @@ bot.command("run <code...>", "运行代码,默认JavaScript")
                 throw new ErrorMsg("Time Limit Exceeded", meta);
             }
 
+            await container.remove();
+
             if (await fsExists(path.join(tmpDir.path, running_id + "_ok"))) {
                 let error_info = await fsPromise.readFile(path.join(tmpDir.path, "stderr"), {flag: "r"});
                 await clearDir(tmpDir.path);
