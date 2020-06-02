@@ -3,7 +3,8 @@ const configDefault = {
     time_limit: 10000,
     memory_limit: 64000000,
     output_limit: 1024,
-    cpu_limit: 0.5
+    cpu_limit: 0.5,
+    inactive_groups: []
 };
 
 const config = CountdownBot.loadConfig(__dirname, configDefault);
@@ -43,7 +44,8 @@ function generateHelp() {
     return Buffer.concat(buffers).toString();
 }
 
-bot.command("run <code...>", "运行代码,默认JavaScript")
+bot.groups.except(config.inactive_groups)
+    .command("run <code...>", "运行代码,默认JavaScript")
     .option("-l,--list", "查看支持语言列表")
     .option("-x,--lang <lang>", "指定语言ID", {default: "js"})
     .action(async ({meta, options}, code) => {
