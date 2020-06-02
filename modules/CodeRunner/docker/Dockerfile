@@ -5,10 +5,7 @@ LABEL maintainer="antares.oier@gmail.com"
 ARG arch=amd
 COPY sources-${arch}.list /etc/apt/sources.list
 
-RUN apt update && apt install -y curl gcc g++ python3 software-properties-common
-
-RUN add-apt-repository -y ppa:linuxuprising/java
-RUN apt update && echo yes | apt install -y oracle-java14-installer oracle-java14-set-default
+RUN apt update && apt install -y curl gcc g++ python3 openjdk-14-jdk
 
 RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
 RUN apt install -y nodejs
