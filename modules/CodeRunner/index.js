@@ -101,7 +101,8 @@ bot.groups.except(config.inactive_groups)
             await container.remove();
 
             if (await fsExists(path.join(tmpDir.path, running_id + "_ok"))) {
-                let error_info = await fsPromise.readFile(path.join(tmpDir.path, "stderr"), {flag: "r"});
+                let error_info = await fsExists(path.join(tmpDir.path, "stderr")) ? "Unknown Error" :
+                    await fsPromise.readFile(path.join(tmpDir.path, "stderr"), {flag: "r"})
                 await clearDir(tmpDir.path);
                 await tmpDir.cleanup();
                 throw new ErrorMsg(error_info.toString(), meta);
