@@ -80,25 +80,28 @@ bot.command("run <code...>", "运行代码,默认JavaScript")
                 }
             });
             await container.start();
-            try {
-                await new Promise(async (resolve, reject) => {
-                    setTimeout(async () => {
-                        reject("Time Limit Exceeded");
-                    }, config.time_limit);
-                    await container.wait();
-                    resolve();
-                });
-            } catch (e) {
+
+            let TLE = () => new Promise(async (resolve) => {
+                setTimeout(() => resolve(true), config.time_limit);
+                await container.wait();
+                resolve(false);
+            });
+
+            if (await TLE()) {
                 await container.kill();
                 await container.remove();
-                throw new ErrorMsg(e, meta);
+                await clearDir(tmpDir.path);
+                await tmpDir.cleanup();
+                throw new ErrorMsg("Time Limit Exceeded", meta);
             }
-            await container.remove();
+
             if (await fsExists(path.join(tmpDir.path, running_id + "_ok"))) {
-                let error = await fsPromise.readFile(path.join(tmpDir.path, "stderr"), {flag: "r"});
-                await fsPromise.rmdir(tmpDir.path, {recursive: true});
-                throw new ErrorMsg(error.toString(), meta);
+                let error_info = await fsPromise.readFile(path.join(tmpDir.path, "stderr"), {flag: "r"});
+                await clearDir(tmpDir.path);
+                await tmpDir.cleanup();
+                throw new ErrorMsg(error_info.toString(), meta);
             }
+
             let result = await fsPromise.readFile(path.join(tmpDir.path, "stdout"), {flag: "r"});
             await clearDir(tmpDir.path);
             await tmpDir.cleanup();
