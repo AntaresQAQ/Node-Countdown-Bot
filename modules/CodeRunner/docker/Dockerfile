@@ -1,7 +1,10 @@
 FROM ubuntu:20.04
 
 LABEL maintainer="antares.oier@gmail.com"
-COPY sources.list /etc/apt/sources.list
+
+ARG arch=amd
+COPY sources-${arch}.list /etc/apt/sources.list
+
 RUN apt update && apt install -y curl gcc g++ python3 software-properties-common
 
 RUN add-apt-repository -y ppa:linuxuprising/java
