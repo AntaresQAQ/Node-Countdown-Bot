@@ -2,7 +2,8 @@ const configDefault = {
     docker_image: "2f23e2a45ebf",
     time_limit: 10000,
     memory_limit: 64000000,
-    output_limit: 1024
+    output_limit: 1024,
+    cpu_limit: 0.5
 };
 
 const config = CountdownBot.loadConfig(__dirname, configDefault);
@@ -76,7 +77,7 @@ bot.command("run <code...>", "运行代码,默认JavaScript")
                     ],
                     Memory: config.memory_limit,
                     MemorySwap: config.memory_limit,
-                    NanoCPUs: parseInt(0.4 / 1e-9),
+                    NanoCPUs: parseInt(config.cpu_limit / 1e-9),
                 }
             });
             await container.start();
