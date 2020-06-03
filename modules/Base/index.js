@@ -48,7 +48,6 @@ bot.plugin(require("koishi-plugin-common"), {
     broadcast: false,
     contextify: false,
     info: false,
-    echo: true,
     exec: false,
     exit: false,
     welcomeMessage: false,
