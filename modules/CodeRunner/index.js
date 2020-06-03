@@ -64,7 +64,7 @@ bot.groups.except(config.inactive_groups)
             await fsPromise.writeFile(path.join(tmpDir.path, lang.source), code);
             let command = (lang.compile ? lang.compile + " > stderr 2>&1 && " : "") +
                 lang.run + " 1> stdout 2>> stderr && touch " + running_id + "_ok";
-            CountdownBot.log("User: " + meta.userId + " run" + options.lang + "\n" + code);
+            CountdownBot.log("User: " + meta.userId + " run " + options.lang + "\n" + code);
             let container = await docker.createContainer({
                 Image: config.docker_image,
                 AttachStdin: false,
