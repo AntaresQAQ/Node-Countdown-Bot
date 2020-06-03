@@ -1,6 +1,6 @@
 {
     "py": {
-        "description": "Python3.8.2",
+        "description": "Python 3.8.2",
         "source": "run.py",
         "compile": null,
         "run": "python3 run.py"
@@ -38,7 +38,7 @@
     "java": {
         "description": "Java (OpenJDK 14) 入口类名必须为Main",
         "source": "Main.java",
-        "compile": "javac Main.java",
-        "run": "java Main"
+        "compile": "javac -encoding UTF8 Main.java",
+        "run": "java -Dfile.encoding=UTF8 Main"
     }
 }
