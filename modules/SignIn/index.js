@@ -197,6 +197,7 @@ function getUserData(userId) {
 
 bot.groups.except(config.inactive_groups)
     .command("sign-in", "签到")
+    .alias("签到")
     .shortcut("签到", {prefix: !config.NoPrefix})
     .action(async ({meta}) => {
             try {
