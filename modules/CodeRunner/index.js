@@ -62,7 +62,7 @@ bot.groups.except(config.inactive_groups)
             if (!langs[options.lang]) throw new ErrorMsg("不支持的语言", meta);
             let lang = langs[options.lang];
             await fsPromise.writeFile(path.join(tmpDir.path, lang.source), code);
-            let command = (lang.compile ? lang.compile + " 2> stderr && " : "") +
+            let command = (lang.compile ? lang.compile + " > stderr 2>&1 && " : "") +
                 lang.run + " 1> stdout 2>> stderr && touch " + running_id + "_ok";
             CountdownBot.log(command);
             let container = await docker.createContainer({
@@ -110,10 +110,11 @@ bot.groups.except(config.inactive_groups)
                 throw new ErrorMsg(error_info.toString(), meta);
             }
 
-            let result = await fsPromise.readFile(path.join(tmpDir.path, "stdout"), {flag: "r"});
+            let result = (await fsPromise.readFile(path.join(tmpDir.path, "stdout"), {flag: "r"})).toString();
             await clearDir(tmpDir.path);
             await tmpDir.cleanup();
-            await meta.$send(result.toString());
+            await meta.$send(result.substr(0, config.output_limit) +
+            result.length >= config.output_limit ? "\n[超出长度部分已截断]" : "");
         } catch (e) {
             CountdownBot.log(e);
         }
