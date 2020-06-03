@@ -197,7 +197,7 @@ function getUserData(userId) {
 
 bot.groups.except(config.inactive_groups)
     .command("sign-in", "签到")
-    .alias("签到")
+    .shortcut("签到", {prefix: !config.NoPrefix})
     .action(async ({meta}) => {
             try {
                 let groupId = parseInt(meta.groupId);
@@ -288,12 +288,6 @@ bot.groups.except(config.inactive_groups)
             CountdownBot.log(e);
         }
     });
-
-if (config.NoPrefix) {
-    bot.groups.except(config.inactive_groups).receiver.on("message", meta => {
-        if (meta.message === "签到") bot.runCommand("sign-in", meta);
-    });
-}
 
 bot.users.command("rating", "签到积分查询")
     .alias("签到积分")
