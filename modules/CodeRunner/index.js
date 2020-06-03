@@ -4,6 +4,7 @@ const configDefault = {
     memory_limit: 64000000,
     output_limit: 1024,
     cpu_limit: 0.5,
+    min_interval: 5,
     inactive_groups: []
 };
 
@@ -45,7 +46,8 @@ function generateHelp() {
 }
 
 bot.groups.except(config.inactive_groups)
-    .command("run <code...>", "运行代码,默认JavaScript")
+    .command("run <code...>", "运行代码,默认JavaScript",
+        {minInterval: config.min_interval, showWarning: true})
     .option("-l,--list", "查看支持语言列表")
     .option("-x,--lang <lang>", "指定语言ID", {default: "js"})
     .action(async ({meta, options}, code) => {
