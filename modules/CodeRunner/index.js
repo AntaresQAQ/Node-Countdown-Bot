@@ -113,8 +113,12 @@ bot.groups.except(config.inactive_groups)
             let result = (await fsPromise.readFile(path.join(tmpDir.path, "stdout"), {flag: "r"})).toString();
             await clearDir(tmpDir.path);
             await tmpDir.cleanup();
-            await meta.$send(result.substr(0, config.output_limit) +
-            result.length >= config.output_limit ? "\n[超出长度部分已截断]" : "");
+            if(result.length === 0) {
+                await meta.$send("无输出");
+            } else {
+                await meta.$send(result.substr(0, config.output_limit) +
+                result.length >= config.output_limit ? "\n[超出长度部分已截断]" : "");
+            }
         } catch (e) {
             CountdownBot.log(e);
         }
