@@ -3,7 +3,7 @@ const configDefault = {
     time_limit: 10000,
     memory_limit: 64000000,
     output_limit: 1024,
-    row_limit: 20,
+    rows_limit: 20,
     cpu_limit: 0.5,
     min_interval: 5,
     inactive_groups: []
@@ -121,8 +121,8 @@ bot.groups.except(config.inactive_groups)
                 await meta.$send("无输出");
             } else {
                 let lines = result.split("\n");
-                if (lines.length > config.row_limit) {
-                    result = lines.slice(0, config.row_limit).join("\n") + "\n[超出行数限制部分已截断]";
+                if (lines.length > config.rows_limit) {
+                    result = lines.slice(0, config.rows_limit).join("\n") + "\n[超出行数限制部分已截断]";
                 }
                 if (result.length > config.output_limit) {
                     await meta.$send(result.substr(0, config.output_limit) + "\n[超出长度部分已截断]")
