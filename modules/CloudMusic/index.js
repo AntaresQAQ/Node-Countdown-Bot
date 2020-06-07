@@ -10,6 +10,7 @@ const configDefault = {
 const config = CountdownBot.loadConfig(__dirname, configDefault);
 
 const requestPromise = require("request-promise");
+const {StatusCodeError} = require("request-promise/errors");
 const cookieJar = requestPromise.jar();
 
 async function login() {
@@ -72,6 +73,22 @@ async function getMusicUrl(id) {
     return res.data[0].url;
 }
 
+async function getMusicLyric(id) {
+    let res = await requestPromise.get({
+        uri: config.api_url + "/lyric",
+        qs: {
+            id: id
+        },
+        jar: cookieJar,
+        json: true
+    });
+    if (res.nolyric || res.uncollected) {
+        return null;
+    } else {
+        return res.lrc.lyric;
+    }
+}
+
 async function searchMusic(keywords) {
     let res = await requestPromise.get({
         uri: config.api_url + "/search",
@@ -86,6 +103,37 @@ async function searchMusic(keywords) {
     return res.result.songs;
 }
 
+async function makeLyricUrl(id, lyric) {
+    try {
+        await requestPromise.post({
+            uri: "https://paste.ubuntu.com/",
+            form: {
+                poster: id,
+                syntax: "text",
+                expiration: "",
+                content: lyric
+            },
+            header: {
+                "Accept": "application/json, text/plain, */*",
+                "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) " +
+                    "AppleWebKit/537.36 (KHTML, like Gecko) " +
+                    "Chrome/81.0.4044.122 Safari/537.36",
+                "Accept-Encoding": "gzip, deflate, br",
+                "Accept-Language": "zh-CN,zh;q=0.9"
+            }
+        });
+    } catch (e) {
+        if(e instanceof StatusCodeError) {
+            if(e.statusCode===302) {
+                return "https://paste.ubuntu.com" + e.response.headers.location;
+            }
+            throw e;
+        }
+        throw e;
+    }
+
+}
+
 bot.groups.except(config.inactive_groups).plus(bot.discusses)
     .command("music <keywords...>", "网易云音乐点歌")
     .alias("音乐")
@@ -93,6 +141,7 @@ bot.groups.except(config.inactive_groups).plus(bot.discusses)
     .option("-i,--id", "指定keywords为id")
     .option("-t,--type <type>", "返回类型[raw/link/record(default)]",
         {default: "record", isString: true})
+    .option("-l,--lyric", "使用Ubuntu Paste Bin 发送歌词链接")
     .action(async ({meta, options}, keywords) => {
         try {
             if (await checkLoginStatus() === false) throw new ErrorMsg("网易云账号登陆失败！", meta);
@@ -118,6 +167,11 @@ bot.groups.except(config.inactive_groups).plus(bot.discusses)
                         await meta.$send(`[CQ:record,file=${url}]`);
                     }
                 }
+                if (options.lyric) {
+                    let lyric = await getMusicLyric(id);
+                    let url = await makeLyricUrl(id, lyric);
+                    await meta.$send(url);
+                }
                 return;
             }
             let musics = await searchMusic(keywords);
@@ -135,6 +189,11 @@ bot.groups.except(config.inactive_groups).plus(bot.discusses)
                         } else if (type === "record") {
                             await meta.$send(`[CQ:record,file=${url}]`);
                         }
+                    }
+                    if (options.lyric) {
+                        let lyric = await getMusicLyric(id);
+                        let url = await makeLyricUrl(id, lyric);
+                        await meta.$send(url);
                     }
                     return;
                 }
