@@ -144,12 +144,9 @@ bot.groups.except(config.inactive_groups).plus(bot.discusses)
     .action(async ({meta, options}, keywords) => {
         try {
             if (await checkLoginStatus() === false) throw new ErrorMsg("网易云账号登陆失败！", meta);
-            let type = (() => {
-                if (options.type !== "record" &&
-                    options.type !== "raw" &&
-                    options.type !== "link") throw new ErrorMsg("非法的返回类型", meta);
-                return options.type;
-            })();
+            let type = options.type;
+            if (type !== "record" && type !== "raw" && type !== "link")
+                throw new ErrorMsg("非法的返回类型", meta);
             if (type === "record" && !await bot.sender.canSendRecord())
                 throw new ErrorMsg("您的CoolQ不支持发送语音", meta);
             if (options.id) {
