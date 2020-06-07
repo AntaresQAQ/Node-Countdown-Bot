@@ -123,15 +123,14 @@ async function makeLyricUrl(id, lyric) {
             }
         });
     } catch (e) {
-        if(e instanceof StatusCodeError) {
-            if(e.statusCode===302) {
+        if (e instanceof StatusCodeError) {
+            if (e.statusCode === 302) {
                 return "https://paste.ubuntu.com" + e.response.headers.location;
             }
             throw e;
         }
         throw e;
     }
-
 }
 
 bot.groups.except(config.inactive_groups).plus(bot.discusses)
