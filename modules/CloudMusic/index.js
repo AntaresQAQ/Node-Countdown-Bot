@@ -168,6 +168,7 @@ bot.groups.except(config.inactive_groups).plus(bot.discusses)
                 }
                 if (options.lyric) {
                     let lyric = await getMusicLyric(id);
+                    if (!lyric) throw new ErrorMsg("该歌曲无歌词", meta);
                     let url = await makeLyricUrl(id, lyric);
                     await meta.$send(url);
                 }
@@ -191,6 +192,7 @@ bot.groups.except(config.inactive_groups).plus(bot.discusses)
                     }
                     if (options.lyric) {
                         let lyric = await getMusicLyric(id);
+                        if (!lyric) throw new ErrorMsg("该歌曲无歌词", meta);
                         let url = await makeLyricUrl(id, lyric);
                         await meta.$send(url);
                     }
