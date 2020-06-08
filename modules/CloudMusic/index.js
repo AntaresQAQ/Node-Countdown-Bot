@@ -36,7 +36,7 @@ async function login() {
             json: true
         });
         return res.code === 200;
-    } else return undefined;
+    } else return null;
 }
 
 async function checkLoginStatus() {
@@ -47,7 +47,7 @@ async function checkLoginStatus() {
             json: true
         });
         return res.code === 200;
-    } else return undefined;
+    } else return null;
 }
 
 async function checkMusicAvailable(id) {
