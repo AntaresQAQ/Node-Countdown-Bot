@@ -3,7 +3,9 @@ const cookieJar = requestPromise.jar();
 
 class CloudMusic {
     constructor(config) {
-        this.config = config;
+        this.config = require("object-assign-deep")({}, {
+            api_url: "http://localhost:3000", search_limit: 10
+        }, config);
         if (this.config.phone || this.config.email) {
             this.login().then((result) => {
                 if (result) {
