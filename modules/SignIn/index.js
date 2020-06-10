@@ -5,195 +5,9 @@ const configDefault = {
 
 const config = CountdownBot.loadConfig(__dirname, configDefault);
 
-const path = require("path");
-const Promise = require("bluebird");
-const sqlite3 = require("sqlite3").verbose();
+const {SignInData, SignInDB} = require("./sign-in.js");
 const moment = require("moment");
-const db = new sqlite3.Database(path.join(CountdownBot.dataDir, "sign-in.db"))
-
-class SignInData {
-    constructor(groupId, userId, time, duration, score, scoreChanges) {
-        this.groupId = groupId;
-        this.userId = userId;
-        this.time = time || 0;
-        this.duration = duration || 0;
-        this.score = score || 0;
-        this.scoreChanges = scoreChanges || 0;
-    }
-}
-
-class UserData {
-    constructor(groupId, userId, score) {
-        this.groupId = groupId;
-        this.userId = userId;
-        this.score = score || 0;
-    }
-}
-
-db.serialize(() => {
-    db.run("CREATE TABLE IF NOT EXISTS SIGN_IN(" +
-        "GROUP_ID      INTEGER NOT NULL," +
-        "USER_ID       INTEGER NOT NULL," +
-        "TIME          INTEGER NOT NULL," +
-        "DURATION      INTEGER NOT NULL," +
-        "SCORE         INTEGER NOT NULL," +
-        "SCORE_CHANGES INTEGER NOT NULL)", err => {
-        if (err) {
-            console.error(err);
-            process.exit(1);
-        }
-        db.run("CREATE INDEX IF NOT EXISTS SIGN_IN_GROUP_ID_INDEX ON SIGN_IN(GROUP_ID)");
-        db.run("CREATE INDEX IF NOT EXISTS SIGN_IN_USER_ID_INDEX  ON SIGN_IN(USER_ID)");
-        db.run("CREATE INDEX IF NOT EXISTS SIGN_IN_TIME_INDEX     ON SIGN_IN(TIME)");
-    });
-    db.run("CREATE TABLE IF NOT EXISTS USERS(" +
-        "GROUP_ID      INTEGER NOT NULL," +
-        "USER_ID       INTEGER NOT NULL," +
-        "SCORE         INTEGER NOT NULL)", err => {
-        if (err) {
-            console.error(err);
-            process.exit(1);
-        }
-        db.run("CREATE INDEX IF NOT EXISTS USERS_GROUP_ID_INDEX   ON USERS(GROUP_ID)");
-        db.run("CREATE INDEX IF NOT EXISTS USERS_USER_ID_INDEX    ON USERS(USER_ID)");
-    });
-});
-
-function calcTotalSignInTimes(groupId, userId) {
-    return new Promise((resolve, reject) => {
-        db.get("SELECT COUNT(*) FROM SIGN_IN WHERE GROUP_ID = ? AND USER_ID = ?",
-            [groupId, userId], (err, row) => {
-                if (err) reject(err);
-                else resolve(row["COUNT(*)"]);
-            });
-    });
-}
-
-function getLastSignInTime(groupId, userId) {
-    return new Promise(((resolve, reject) => {
-        db.get("SELECT MAX(TIME) FROM SIGN_IN WHERE GROUP_ID = ? AND USER_ID = ?",
-            [groupId, userId], (err, row) => {
-                if (err) reject(err);
-                else resolve(row["MAX(TIME)"]);
-            })
-    }));
-}
-
-function getLastSignInData(groupId, userId) {
-    return new Promise(async (resolve, reject) => {
-        try {
-            if (await calcTotalSignInTimes(groupId, userId)) {
-                let lastTime = await getLastSignInTime(groupId, userId);
-                db.get("SELECT * FROM SIGN_IN WHERE GROUP_ID = ? AND USER_ID = ? AND TIME = ?",
-                    [groupId, userId, lastTime], (err, row) => {
-                        if (err) reject(err);
-                        else resolve(new SignInData(
-                            groupId, userId, row["TIME"], row["DURATION"], row["SCORE"], row["SCORE_CHANGES"]));
-                    });
-            } else {
-                resolve(new SignInData(groupId, userId));
-            }
-        } catch (e) {
-            reject(e);
-        }
-    });
-}
-
-function calcMonthSignInTimes(groupId, userId) {
-    let this_month = new Date();
-    this_month.setDate(1);
-    this_month.setHours(0, 0, 0, 0);
-    return new Promise((resolve, reject) => {
-        db.get("SELECT COUNT(*) FROM SIGN_IN WHERE GROUP_ID = ? AND USER_ID = ? AND TIME >= ?",
-            [groupId, userId, parseInt(this_month.getTime() / 1000)],
-            (err, row) => {
-                if (err) reject(err);
-                else resolve(row["COUNT(*)"]);
-            });
-    });
-}
-
-function saveSignInData(signInData) {
-    return new Promise((resolve, reject) => {
-        db.run("INSERT INTO SIGN_IN (GROUP_ID,USER_ID,TIME,DURATION,SCORE,SCORE_CHANGES) VALUES (?,?,?,?,?,?)", [
-            signInData.groupId,
-            signInData.userId,
-            signInData.time,
-            signInData.duration,
-            signInData.score,
-            signInData.scoreChanges
-        ], err => {
-            if (err) reject(err);
-            db.get("SELECT COUNT(*) FROM USERS WHERE GROUP_ID = ? AND USER_ID = ?", [
-                signInData.groupId,
-                signInData.userId
-            ], (err, row) => {
-                if (err) reject(err);
-                else if (row["COUNT(*)"]) {
-                    db.run("UPDATE USERS SET SCORE = ? WHERE GROUP_ID = ? AND USER_ID = ?", [
-                        signInData.score,
-                        signInData.groupId,
-                        signInData.userId
-                    ], (err) => {
-                        if (err) reject(err);
-                        else resolve();
-                    });
-                } else {
-                    db.run("INSERT INTO USERS (GROUP_ID,USER_ID,SCORE) VALUES (?,?,?)", [
-                        signInData.groupId,
-                        signInData.userId,
-                        signInData.score
-                    ], (err) => {
-                        if (err) reject(err);
-                        else resolve();
-                    })
-                }
-            });
-        });
-    });
-}
-
-function getSignInData(timeBegin, timeEnd, groupId, userId) {
-    return new Promise((resolve, reject) => {
-        if (userId) {
-            db.all("SELECT * FROM SIGN_IN WHERE GROUP_ID = ? AND USER_ID = ? AND TIME >= ? AND TIME <= ?",
-                [groupId, userId, timeBegin, timeEnd], (err, rows) => {
-                    if (err) reject(err);
-                    else resolve(rows.map((row) => new SignInData(
-                        groupId,
-                        userId,
-                        row["TIME"],
-                        row["DURATION"],
-                        row["SCORE"],
-                        row["SCORE_CHANGES"]
-                    )));
-                });
-        } else {
-            db.all("SELECT * FROM SIGN_IN WHERE GROUP_ID = ? AND TIME >= ? AND TIME < ?",
-                [groupId, timeBegin, timeEnd], (err, rows) => {
-                    if (err) reject(err);
-                    else resolve(rows.map((row) => new SignInData(
-                        groupId,
-                        row["USER_ID"],
-                        row["TIME"],
-                        row["DURATION"],
-                        row["SCORE"],
-                        row["SCORE_CHANGES"]
-                    )));
-                });
-        }
-    });
-}
-
-function getUserData(userId) {
-    return new Promise((resolve, reject) => {
-        db.all("SELECT * FROM USERS WHERE USER_ID = ?", [userId],
-            (err, rows) => {
-                if (err) reject(err);
-                else resolve(rows.map(row => new UserData(row["GROUP_ID"], userId, row["SCORE"])));
-            });
-    });
-}
+const db = new SignInDB();
 
 bot.groups.except(config.inactive_groups)
     .command("sign-in", "签到")
@@ -203,15 +17,16 @@ bot.groups.except(config.inactive_groups)
             try {
                 let groupId = parseInt(meta.groupId);
                 let userId = parseInt(meta.userId);
-                let lastSignInData = await getLastSignInData(groupId, userId);
+                let lastSignInData = await db.getLastSignInData(groupId, userId);
                 let lastTime = new Date(lastSignInData.time * 1000);
                 let currentTime = new Date();
-                let totalTimes = await calcTotalSignInTimes(groupId, userId);
-                let monthTimes = await calcMonthSignInTimes(groupId, userId);
+                let totalTimes = await db.calcTotalSignInTimes(groupId, userId);
+                let monthTimes = await db.calcMonthSignInTimes(groupId, userId);
 
                 if (lastTime.getFullYear() === currentTime.getFullYear() &&
                     lastTime.getMonth() === currentTime.getMonth() &&
                     lastTime.getDate() === currentTime.getDate()) {
+                    // noinspection JSUnresolvedVariable
                     let msg = `[CQ:at,qq=${userId}]今天已经签过到啦！
 连续签到：${lastSignInData.duration}天
 当前积分：${lastSignInData.score}
@@ -224,6 +39,7 @@ bot.groups.except(config.inactive_groups)
 
                 let tomorrowTime = new Date(lastTime.getFullYear(),
                     lastTime.getMonth(), lastTime.getDate() + 1);
+                // noinspection JSUnresolvedFunction
                 if (tomorrowTime.getFullYear() === currentTime.getFullYear() &&
                     tomorrowTime.getMonth() === currentTime.getMonth() &&
                     tomorrowTime.getDate() === currentTime.getDate())
@@ -234,7 +50,7 @@ bot.groups.except(config.inactive_groups)
                 let durationAdd = signInData.duration <= 5 ? 0 : Math.round(2.75 * Math.log(signInData.duration - 4) - 1);
                 signInData.scoreChanges = 10 + durationAdd;
                 signInData.score = lastSignInData.score + signInData.scoreChanges;
-                await saveSignInData(signInData);
+                await db.saveSignInData(signInData);
                 let msg = `给[CQ:at,qq=${userId}]签到成功了！
 连续签到：${signInData.duration}天
 积分增加：${signInData.scoreChanges}
@@ -270,7 +86,7 @@ bot.groups.except(config.inactive_groups)
                 timeBegin.setFullYear(year);
             }
             let timeEnd = new Date(timeBegin.getFullYear(), timeBegin.getMonth() + 1);
-            let signInData = await getSignInData(
+            let signInData = await db.getSignInData(
                 parseInt(timeBegin.getTime() / 1000),
                 parseInt(timeEnd.getTime() / 1000),
                 parseInt(meta.groupId),
@@ -280,6 +96,7 @@ bot.groups.except(config.inactive_groups)
             buffers.push(Buffer.from(`[CQ:at,qq=${meta.userId}]\n`));
             buffers.push(Buffer.from(`查询到${signInData.length}条签到记录：\n`));
             buffers.push(Buffer.from("日期 时间 积分 积分变化\n"));
+            // noinspection JSUnresolvedFunction
             signInData.forEach(data => {
                 let timeString = moment(new Date(data.time * 1000)).format("YYYY/MM/DD HH:mm");
                 buffers.push(Buffer.from(`${timeString} ${data.score} +${data.scoreChanges}\n`));
@@ -294,7 +111,8 @@ bot.users.command("rating", "签到积分查询")
     .alias("签到积分")
     .action(async ({meta}) => {
         try {
-            let userData = await getUserData(meta.userId);
+            let userData = await db.getUserData(meta.userId);
+            // noinspection JSUnresolvedVariable
             let buffers = [Buffer.from(`查询到您在${userData.length}个群有签到记录:\n`)];
             for (let data of userData) {
                 let groupInfo = await bot.sender.getGroupInfo(data.groupId);
