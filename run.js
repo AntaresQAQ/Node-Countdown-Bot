@@ -3,13 +3,7 @@ const fs = require("fs-extra");
 const fsPromise = fs.promises;
 const path = require("path");
 const objectAssignDeep = require("object-assign-deep");
-
-global.ErrorMsg = class ErrorMsg {
-    constructor(msg, meta) {
-        this.msg = msg;
-        this.meta = meta;
-    }
-}
+const utility = require("./utility.js");
 
 // noinspection JSUndefinedPropertyAssignment
 global.CountdownBot = {
@@ -45,6 +39,7 @@ global.CountdownBot = {
     async run() {
         this.config = this.loadConfig(__dirname, require("./config-default.json"));
         this.dataDir = path.join(this.rootDir, "data");
+        this.util = utility;
         await fsPromise.mkdir(this.dataDir, {recursive: true});
         // noinspection JSUndefinedPropertyAssignment
         global.bot = new App(this.config.koishi);

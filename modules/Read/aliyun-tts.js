@@ -1,25 +1,39 @@
 const requestPromise = require("request-promise");
 const RPCClient = require("@alicloud/pop-core").RPCClient;
 
-async function getToken(AccessKeyId, AccessKeySecret) {
-    let client = new RPCClient({
-        accessKeyId: AccessKeyId,
-        accessKeySecret: AccessKeySecret,
-        endpoint: 'http://nls-meta.cn-shanghai.aliyuncs.com',
-        apiVersion: '2019-02-28'
-    });
-    let result = await client.request('CreateToken');
-    return result.Token;
-}
+class AliyunTTS {
+    constructor(AccessKeyId, AccessKeySecret, AppKey) {
+        this.AppKey = AppKey;
+        let client = new RPCClient({
+            accessKeyId: AccessKeyId,
+            accessKeySecret: AccessKeySecret,
+            endpoint: 'http://nls-meta.cn-shanghai.aliyuncs.com',
+            apiVersion: '2019-02-28'
+        });
+        let getToken = async () => {
+            try {
+                this.Token = (await client.request('CreateToken')).Token;
+                console.log("Get Aliyun Token Succeed!");
+                let timeout = parseInt(this.Token.ExpireTime) * 1000 - Date.now() - 60000;
+                setTimeout(getToken, timeout);
+            } catch (e) {
+                console.error("Get Aliyun Token Failed, Check Your AccessKey!");
+                process.exit(1);
+            }
+        }
+        getToken().catch((err) => {
+            console.error(err);
+            process.exit(1);
+        });
+    }
 
-async function getVoice(text, appKey, token, options) {
-    let postBody = Object.assign({}, options, {
-        appkey: appKey,
-        text: text,
-        token: token,
-        format: "wav"
-    });
-    try {
+    async getVoice(text, options) {
+        let postBody = Object.assign({}, options, {
+            appkey: this.AppKey,
+            text: text,
+            token: this.Token.Id,
+            format: "wav"
+        });
         let result = await requestPromise.post({
             uri: "https://nls-gateway.cn-shanghai.aliyuncs.com/stream/v1/tts",
             headers: {
@@ -30,12 +44,7 @@ async function getVoice(text, appKey, token, options) {
             encoding: null
         });
         return Buffer.from(result, "binary");
-    } catch (e) {
-        throw e;
     }
 }
 
-module.exports = {
-    getVoice: getVoice,
-    getToken: getToken
-}
+module.exports = AliyunTTS;

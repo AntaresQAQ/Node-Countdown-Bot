@@ -11,7 +11,7 @@ const configDefault = {
 };
 
 const config = CountdownBot.loadConfig(__dirname, configDefault);
-const aliyun = require("./aliyun-tts.js");
+const tts = new (require("./aliyun-tts.js"))(config.accessKeyId, config.accessKeySecret, config.appKey);
 const voices = require("./voices.json") || [];
 const voiceSet = new Set(voices.map(voice => voice.voice));
 
@@ -44,7 +44,7 @@ bot.groups.except(config.inactive_groups).plus(bot.discusses)
             if (isNaN(speechRate)) throw new ErrorMsg("请检查参数rate值是否为数字范围内", meta)
             if (speechRate < 0 || speechRate > 1000) throw new ErrorMsg("请检查参数rate值是否在0~1000范围内", meta);
             if (!voiceSet.has(options.voice)) throw new ErrorMsg("未知的Voice", meta);
-            let result = await aliyun.getVoice(text, config.appKey, config.token.Id, {
+            let result = await tts.getVoice(text, {
                 voice: options.voice,
                 volume: config.volume,
                 speech_rate: speechRate - 500,
@@ -56,21 +56,6 @@ bot.groups.except(config.inactive_groups).plus(bot.discusses)
             CountdownBot.log(e)
         }
     });
-
-(async function setToken() {
-    try {
-        config.token = await aliyun.getToken(config.accessKeyId, config.accessKeySecret);
-        console.log("Get Aliyun Token Succeed!");
-        let timeout = parseInt(config.token.ExpireTime) * 1000 - Date.now() - 60000;
-        setTimeout(setToken, timeout);
-    } catch (e) {
-        console.error("Get Aliyun Token Failed, Check Your AccessKey!");
-        process.exit(1);
-    }
-})().catch((err) => {
-    console.error(err);
-    process.exit(1);
-});
 
 module.exports = {
     author: "Antares",
