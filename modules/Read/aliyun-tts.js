@@ -1,5 +1,6 @@
 const requestPromise = require("request-promise");
 const RPCClient = require("@alicloud/pop-core").RPCClient;
+const schedule = require("node-schedule");
 
 class AliyunTTS {
     constructor(AccessKeyId, AccessKeySecret, AppKey) {
@@ -13,11 +14,11 @@ class AliyunTTS {
         let getToken = async () => {
             try {
                 this.Token = (await client.request('CreateToken')).Token;
-                console.log("Get Aliyun Token Succeed!");
-                let timeout = parseInt(this.Token.ExpireTime) * 1000 - Date.now() - 60000;
-                setTimeout(getToken, timeout);
+                console.log("Read: Get Aliyun Token Succeed!");
+                let nextDate = parseInt(this.Token.ExpireTime) * 1000 - 60000;
+                schedule.scheduleJob(nextDate, getToken);
             } catch (e) {
-                console.error("Get Aliyun Token Failed, Check Your AccessKey!");
+                console.error("Read: Get Aliyun Token Failed, Check Your AccessKey!");
                 process.exit(1);
             }
         }
