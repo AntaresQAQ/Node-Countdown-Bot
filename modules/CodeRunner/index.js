@@ -17,7 +17,7 @@ const fsPromise = fs.promises;
 const path = require("path");
 const Docker = require("dockerode");
 const docker = new Docker();
-const koishiUtils = require("koishi-utils");
+const {CQCode} = require("koishi");
 const Promise = require("bluebird");
 
 function fsExists(filePath) {
@@ -61,7 +61,7 @@ bot.groups.except(config.inactive_groups)
                 return;
             }
             let running_id = parseInt(Math.random() * 1000000);
-            code = koishiUtils.CQCode.unescape(code);
+            code = CQCode.unescape(code);
             let tmpDir = await tmpPromise.dir();
             if (!langs[options.lang]) throw new ErrorMsg("不支持的语言", meta);
             let lang = langs[options.lang];

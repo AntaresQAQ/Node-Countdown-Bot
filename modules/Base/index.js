@@ -7,6 +7,7 @@ const configDefault = {
 };
 
 const config = CountdownBot.loadConfig(__dirname, configDefault);
+const {commonPlugin} = require("koishi");
 
 bot.command("modules", "查看模块列表")
     .alias("模块")
@@ -43,7 +44,7 @@ bot.command("about", "关于", {authority: 0})
         }
     });
 
-bot.plugin(require("koishi-plugin-common"), {
+bot.plugin(commonPlugin, {
     admin: false,
     broadcast: false,
     contextify: false,
