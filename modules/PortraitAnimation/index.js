@@ -31,7 +31,7 @@ bot.command("anime <...image>", "人像动漫化")
                             encoding: "base64"
                         });
                         let result = await client.portraitAnimation(imageBase64, options.mask);
-                        console.log(result);
+                        if (result.error_code) throw new ErrorMsg(result.error_msg, meta);
                         await meta1.$send(`[CQ:image,file=base64://${result.image}]`);
                     } catch (e) {
                         CountdownBot.log(e);
@@ -45,7 +45,7 @@ bot.command("anime <...image>", "人像动漫化")
                 encoding: "base64"
             });
             let result = await client.portraitAnimation(imageBase64, options.mask);
-            console.log(result);
+            if (result.error_code) throw new ErrorMsg(result.error_msg, meta);
             await meta.$send(`[CQ:image,file=base64://${result.image}]`);
         } catch (e) {
             CountdownBot.log(e);
