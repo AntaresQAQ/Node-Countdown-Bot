@@ -15,7 +15,7 @@ class AliyunTTS {
             try {
                 this.Token = (await client.request('CreateToken')).Token;
                 console.log("Read: Get Aliyun Token Succeed!");
-                let nextDate = parseInt(this.Token.ExpireTime) * 1000 - 60000;
+                let nextDate = new Date(parseInt(this.Token.ExpireTime) * 1000 - 60000);
                 schedule.scheduleJob(nextDate, getToken);
             } catch (e) {
                 console.error("Read: Get Aliyun Token Failed, Check Your AccessKey!");
