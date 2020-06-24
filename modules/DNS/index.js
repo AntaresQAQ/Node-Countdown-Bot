@@ -73,17 +73,19 @@ const TypesDNS = {
 }
 
 const helpString = () => {
-    let help = "dns [hostname] [类型](可选)\n 支持的类型列表:";
+    let help = "支持的类型列表:";
     for (let type in TypesDNS) {
         help += `\n${type}:${TypesDNS[type].name}`;
     }
     return help;
 }
 
-bot.command("dns <hostname> <type>", "DNS查询")
+bot.command("dns <hostname>", "DNS查询")
+    .option("-t,--type [type]", "类型")
     .usage(helpString())
-    .action(async ({meta}, hostname, type) => {
+    .action(async ({meta, options}, hostname) => {
         try {
+            let type = options.type;
             if (type === undefined) {
                 let buffers = [];
                 for (let type in TypesDNS) {
