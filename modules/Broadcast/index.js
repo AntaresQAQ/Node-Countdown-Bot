@@ -29,7 +29,7 @@ schedule.scheduleJob(config.cron, async () => {
                         else return `今天(${moment(time).format('YYYY-MM-DD')})是${event.name}`;
                     };
                     // noinspection JSUnfilteredForInLoop
-                    await bot.sender.sendGroupMsgAsync(parseInt(group), msg());
+                    await bot.sender.sendGroupMsg(parseInt(group), msg());
                 }
             } catch (e) {
                 CountdownBot.log(e);
