@@ -3,34 +3,29 @@ const configDefault = {
 };
 
 const config = CountdownBot.loadConfig(__dirname, configDefault);
-const requestPromise = require("request-promise");
+const axios = require("axios");
 
 bot.command("where <keywords...>", "高德地图搜索")
   .option("-i,--id", "精确搜索")
   .action(async ({meta, options}, keywords) => {
     try {
-      let result;
+      let res;
       if (options.id) {
-        result = await requestPromise.get({
-          uri: "https://restapi.amap.com/v3/place/detail",
-          qs: {
+        res = await axios.get("https://restapi.amap.com/v3/place/detail", {
+          params: {
             key: config.api_key,
             id: keywords
-          },
-          json: true,
-          encode: "utf-8"
+          }
         });
       } else {
-        result = await requestPromise.get({
-          uri: "https://restapi.amap.com/v3/place/text",
-          qs: {
+        res = await axios.get("https://restapi.amap.com/v3/place/text", {
+          params: {
             key: config.api_key,
             keywords: keywords
-          },
-          json: true,
-          encode: "utf-8"
+          }
         });
       }
+      let result = res.data;
       if (result.status !== "1") throw new ErrorMsg(result.info, meta);
       if (!result.pois.length) throw new ErrorMsg("搜索无结果", meta);
       let target = result.pois[0];

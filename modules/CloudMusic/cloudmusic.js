@@ -1,5 +1,8 @@
-const requestPromise = require("request-promise");
-const cookieJar = requestPromise.jar();
+const axios = require("axios");
+const tough = require('tough-cookie');
+require('axios-cookiejar-support').default(axios);
+const cookieJar = new tough.CookieJar();
+
 
 class CloudMusic {
   constructor(config) {
@@ -22,92 +25,83 @@ class CloudMusic {
 
   async login() {
     if (this.config.phone) {
-      let res = await requestPromise.get({
-        uri: this.config.api_url + "/login/cellphone",
-        qs: {
+      let res = await axios.get(this.config.api_url + "/login/cellphone", {
+        params: {
           phone: this.config.phone,
           password: this.config.password
         },
         jar: cookieJar,
-        json: true
+        withCredentials: true
       });
-      return res.code === 200;
+      return res.data.code === 200;
     } else if (this.config.email) {
-      let res = await requestPromise.get({
-        uri: this.config.api_url + "/login",
-        qs: {
+      let res = await axios.get(this.config.api_url + "/login", {
+        params: {
           email: this.config.email,
           password: this.config.password
         },
         jar: cookieJar,
-        json: true
+        withCredentials: true
       });
-      return res.code === 200;
+      return res.data.code === 200;
     } else return null;
   }
 
   async checkLoginStatus() {
     if (this.config.phone || this.config.email) {
-      let res = await requestPromise.get({
-        uri: this.config.api_url + "/login/refresh",
+      let res = await axios.get(this.config.api_url + "/login/refresh", {
         jar: cookieJar,
-        json: true
+        withCredentials: true
       });
-      return res.code === 200;
+      return res.data.code === 200;
     } else return null;
   }
 
   async checkMusicAvailable(id) {
-    let res = await requestPromise.get({
-      uri: this.config.api_url + "/check/music",
-      qs: {id: id},
+    let res = await axios.get(this.config.api_url + "/check/music", {
+      params: {id: id},
       jar: cookieJar,
-      json: true
+      withCredentials: true
     });
-    return res.success;
+    return res.data.success;
   }
 
   async getMusicUrl(id) {
-    let res = await requestPromise.get({
-      uri: this.config.api_url + "/song/url",
-      qs: {
+    let res = await axios.get(this.config.api_url + "/song/url", {
+      params: {
         id: id,
         br: 320000
       },
       jar: cookieJar,
-      json: true
+      withCredentials: true
     });
-    return res.data[0].url;
+    return res.data.data[0].url;
   }
 
   async getMusicLyric(id) {
-    let res = await requestPromise.get({
-      uri: this.config.api_url + "/lyric",
-      qs: {
-        id: id
-      },
+    let res = await axios.get(this.config.api_url + "/lyric", {
+      params: {id: id},
       jar: cookieJar,
-      json: true
+      withCredentials: true
     });
-    if (res.nolyric || res.uncollected) {
+    if (res.data["nolyric"] || res.data["uncollected"]) {
       return null;
     } else {
-      return res.lrc.lyric;
+      return res.data["lrc"]["lyric"];
     }
   }
 
   async searchMusic(keywords) {
-    let res = await requestPromise.get({
-      uri: this.config.api_url + "/search",
-      qs: {
+    let res = await axios.get(this.config.api_url + "/search", {
+      params: {
         keywords: keywords,
         limit: this.config.search_limit
       },
       jar: cookieJar,
-      json: true
+      withCredentials: true
     });
-    if (res.code !== 200 || res.result.songCount === 0) return null;
-    return res.result.songs;
+    if (res.data.code !== 200 || res.data.result["songCount"] === 0) return null;
+    return res.data.result["songs"];
   }
 }
 

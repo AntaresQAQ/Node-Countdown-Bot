@@ -1,19 +1,16 @@
-const requestPromise = require("request-promise");
+const axios = require("axios");
 
 bot.command("oier <name...>", "OIerDB(http://bytew.net/OIer)查询")
   .usage("oier [关键词]")
   .action(async ({meta}, name) => {
     try {
-      let result = await requestPromise({
-        uri: "http://bytew.net/OIer/search.php",
-        qs: {
+      let res = await axios.get("http://bytew.net/OIer/search.php", {
+        params: {
           method: "normal",
           q: name
-        },
-        json: true,
-        contentType: ""
+        }
       });
-      let items = result.result.sort(() => (Math.random() - 0.5));
+      let items = res.data.result.sort(() => (Math.random() - 0.5));
       if (!items.length) throw new ErrorMsg("找不到相关内容", meta);
       let buffers = [Buffer.from("查询到以下内容:\n")];
       for (let i = 0; i < items.length && i < 5; i++) {

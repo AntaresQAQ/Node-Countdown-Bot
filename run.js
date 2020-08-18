@@ -42,11 +42,29 @@ global.CountdownBot = {
     this.util = utility;
     await fsPromise.mkdir(this.dataDir, {recursive: true});
     // noinspection JSUndefinedPropertyAssignment
+
     global.bot = new App(this.config.koishi);
     bot.options.commandPrefix = this.config.commandPrefix;
+
     await this.loadModules();
-    await bot.start();
-    console.log("Countdown-Bot started succeed!");
+
+    if (this.config.debug) {
+      bot.receiver.on("message/friend", meta => {
+        console.log(`收到 ${meta.sender.nickname}(${meta.sender.userId}) 的消息: ${meta.message}`);
+      });
+      bot.receiver.on("message/group", meta => {
+        console.log(`收到 来自群${meta.groupId}中${meta.sender.nickname}(${meta.sender.userId}) ` +
+          `的私聊消息: ${meta.message}`);
+      });
+      bot.receiver.on("message/normal", meta => {
+        console.log(`来自群 ${meta.groupId} 由 ${meta.sender.nickname}(${meta.sender.userId})` +
+          `发出的消息: ${meta.message}`);
+      });
+      bot.receiver.on("message/notice", meta => {
+        console.log(`来自群 ${meta.groupId} 发出的提醒信息: ${meta.message}`);
+      });
+    }
+    bot.start().then(() => console.log("Countdown-Bot started succeed!"));
   }
 };
 

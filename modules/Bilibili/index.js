@@ -26,7 +26,7 @@ bot.command("avbv <id>", "AV号BV号互转")
       CountdownBot.log(e);
     }
   });
-
+/*
 bot.groups.receiver.on("message", async (meta) => {
   try {
     let search = /\[CQ:rich,content=([^,]+),title=([^,]+)]/g.exec(meta.message);
@@ -43,7 +43,7 @@ bot.groups.receiver.on("message", async (meta) => {
     CountdownBot.log(e);
   }
 });
-
+*/
 module.exports = {
   author: "Antares",
   version: "1.0",

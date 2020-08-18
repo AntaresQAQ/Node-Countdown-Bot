@@ -1,4 +1,4 @@
-const requestPromise = require("request-promise");
+const axios = require("axios");
 const RPCClient = require("@alicloud/pop-core").RPCClient;
 const schedule = require("node-schedule");
 
@@ -29,22 +29,16 @@ class AliyunTTS {
   }
 
   async getVoice(text, options) {
-    let postBody = Object.assign({}, options, {
+    let data = Object.assign({}, options, {
       appkey: this.AppKey,
       text: text,
       token: this.Token.Id,
       format: "wav"
     });
-    let result = await requestPromise.post({
-      uri: "https://nls-gateway.cn-shanghai.aliyuncs.com/stream/v1/tts",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: postBody,
-      json: true,
-      encoding: null
+    let res = await axios.post("https://nls-gateway.cn-shanghai.aliyuncs.com/stream/v1/tts", data, {
+      headers: {"Content-Type": "application/json"}
     });
-    return Buffer.from(result, "binary");
+    return Buffer.from(res.data, "binary");
   }
 }
 

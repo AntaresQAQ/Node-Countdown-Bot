@@ -5,7 +5,7 @@ const configDefault = {
 
 const config = CountdownBot.loadConfig(__dirname, configDefault);
 const schedule = require("node-schedule");
-const requestPromise = require("request-promise");
+const axios = require("axios");
 const cheerio = require("cheerio");
 
 function generateHitokotoMessage(text, source, id) {
@@ -13,11 +13,10 @@ function generateHitokotoMessage(text, source, id) {
 }
 
 async function fetchHitokotoById(id) {
-  let res = await requestPromise.get({
-    uri: "https://hitokoto.cn",
-    qs: {id: id}
+  let res = await axios.get("https://hitokoto.cn", {
+    params: {id: id}
   });
-  const $ = cheerio.load(res);
+  const $ = cheerio.load(res.data);
   return generateHitokotoMessage(
     $("#hitokoto_text").text(),
     $("#hitokoto_author").text(),
@@ -26,11 +25,8 @@ async function fetchHitokotoById(id) {
 }
 
 async function fetchRandomHitokoto() {
-  let res = await requestPromise.get({
-    uri: "https://v1.hitokoto.cn",
-    json: true
-  });
-  return generateHitokotoMessage(res["hitokoto"], res["from"], res["id"]);
+  let res = await axios.get("https://v1.hitokoto.cn");
+  return generateHitokotoMessage(res.data["hitokoto"], res.data["from"], res.data["id"]);
 }
 
 schedule.scheduleJob(config.cron, async () => {

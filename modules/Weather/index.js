@@ -3,19 +3,17 @@ const configDefault = {
 };
 
 const config = CountdownBot.loadConfig(__dirname, configDefault);
-const requestPromise = require("request-promise");
+const axios = require("axios");
 
 async function getWeatherData(location, type1, type2) {
-  let result = await requestPromise.get({
-    uri: `https://free-api.heweather.net/s6/${type1}/${type2}`,
-    qs: {
+  let result = await axios.get(`https://free-api.heweather.net/s6/${type1}/${type2}`, {
+    params: {
       location: location,
       key: config.api_key,
       lang: "zh"
-    },
-    json: true
+    }
   });
-  return result['HeWeather6'][0];
+  return result.data['HeWeather6'][0];
 }
 
 function generateLocation(data) {

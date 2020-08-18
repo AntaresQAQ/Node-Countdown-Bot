@@ -1,15 +1,12 @@
-const requestPromise = require("request-promise");
+const axios = require("axios");
 
 bot.command("oiwiki <keywords>", "OI-Wiki查询")
   .usage("oiwiki [查询关键词]")
   .example("oiwiki 线段树")
   .action(async ({meta}, keywords) => {
     try {
-      let results = await requestPromise.get({
-        uri: "https://search.oi-wiki.org:8443",
-        qs: {s: keywords},
-        json: true
-      });
+      let res = await axios.get("https://search.oi-wiki.org:8443", {params: {s: keywords}});
+      let results = res.data;
       let buffers = [Buffer.from(`查询到${results.length}条相关内容：\n`)];
       for (let result of results) {
         buffers.push(Buffer.from(`${result.title}: https://oi-wiki.org${result.url}\n\n`))

@@ -1,7 +1,7 @@
-const request = require("request");
-const Promise = require("bluebird");
-const Url = require("url");
-const path = require("path");
+// const request = require("request");
+// const Promise = require("bluebird");
+// const Url = require("url");
+// const path = require("path");
 
 const tab = [...'fZodR9XQDSUm21yCkr6zBqiveYah8bt4xsWpHnJE7jL5VG3guMTKNPAwcF'];
 const sss = [11, 10, 3, 8, 4, 6];
@@ -25,13 +25,17 @@ module.exports = {
       result += tab.indexOf(bv[sss[i]]) * 58 ** i;
     }
     return `av${result - add ^ xor}`;
-  },
-  url2bv(url) {
+  }/*,
+  async url2bv(url) {
+    let res = await axios.request({
+      url: url
+    });
+    console.log(res);
     return new Promise((resolve, reject) => {
       request(url, {followAllRedirects: true}, (err, res) => {
         if (err) reject(err);
         resolve(path.parse(Url.parse(res.request.href).pathname).name);
       });
     });
-  }
+  }*/
 }

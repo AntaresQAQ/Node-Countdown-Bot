@@ -1,4 +1,4 @@
-const requestPromise = require("request-promise");
+const axios = require("axios");
 const urlencode = require("urlencode");
 
 bot.command("couplet <text>", "对对联")
@@ -7,12 +7,10 @@ bot.command("couplet <text>", "对对联")
   .action(async ({meta}, text) => {
     try {
       // Supported by https://ai.binwang.me/couplet/
-      let result = await requestPromise.get({
-        uri: `https://ai-backend.binwang.me/chat/couplet/${urlencode(text)}`,
-        json: true,
+      let result = await axios.get(`https://ai-backend.binwang.me/chat/couplet/${urlencode(text)}`, {
         timeout: 30000
       });
-      await meta.$send("上联：" + text + "\n下联：" + result.output);
+      await meta.$send("上联：" + text + "\n下联：" + result.data.output);
     } catch (e) {
       CountdownBot.log(e);
     }

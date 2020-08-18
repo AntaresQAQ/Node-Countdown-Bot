@@ -4,7 +4,7 @@ const configDefault = {
 };
 const config = CountdownBot.loadConfig(__dirname, configDefault);
 
-const requestPromise = require("request-promise");
+const axios = require("axios");
 const BaiduAI = require("./baidu-ai.js");
 const client = new BaiduAI(config.baidu_client_id, config.baidu_client_secret);
 
@@ -27,10 +27,8 @@ bot.command("anime <...image>", "人像动漫化")
             search = imageRE.exec(meta1.message);
             if (!search) next();
             let imageUrl = search[2];
-            let imageBase64 = await requestPromise.get({
-              uri: imageUrl,
-              encoding: "base64"
-            });
+            let res = await axios.get(imageUrl, {responseType: "arraybuffer"});
+            let imageBase64 = Buffer.from(res.data).toString("base64");
             let result = await client.portraitAnimation(imageBase64, options.mask);
             if (result.error_code) throw new ErrorMsg(result.error_msg, meta1);
             await meta1.$send(`[CQ:image,file=base64://${result.image}]`);
@@ -41,10 +39,8 @@ bot.command("anime <...image>", "人像动漫化")
         return;
       }
       let imageUrl = search[2];
-      let imageBase64 = await requestPromise.get({
-        uri: imageUrl,
-        encoding: "base64"
-      });
+      let res = await axios.get(imageUrl, {responseType: "arraybuffer"});
+      let imageBase64 = Buffer.from(res.data).toString("base64");
       let result = await client.portraitAnimation(imageBase64, options.mask);
       if (result.error_code) throw new ErrorMsg(result.error_msg, meta);
       await meta.$send(`[CQ:image,file=base64://${result.image}]`);
