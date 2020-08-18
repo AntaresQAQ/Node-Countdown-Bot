@@ -9,29 +9,29 @@ const xor = 177451812;
 const add = 8728348608;
 
 module.exports = {
-    av2bv(av) {
-        let num = parseInt(av);
-        if (isNaN(num) || num <= 0) return null;
-        num = (num ^ xor) + add;
-        let result = [...'BV1  4 1 7  '];
-        for (let i = 0; i < 6; i++) {
-            result[sss[i]] = tab[Math.floor(num / 58 ** i) % 58];
-        }
-        return result.join('');
-    },
-    bv2av(bv) {
-        let result = 0;
-        for (let i = 0; i < 6; i++) {
-            result += tab.indexOf(bv[sss[i]]) * 58 ** i;
-        }
-        return `av${result - add ^ xor}`;
-    },
-    url2bv(url) {
-        return new Promise((resolve, reject) => {
-            request(url, {followAllRedirects: true}, (err, res) => {
-                if (err) reject(err);
-                resolve(path.parse(Url.parse(res.request.href).pathname).name);
-            });
-        });
+  av2bv(av) {
+    let num = parseInt(av);
+    if (isNaN(num) || num <= 0) return null;
+    num = (num ^ xor) + add;
+    let result = [...'BV1  4 1 7  '];
+    for (let i = 0; i < 6; i++) {
+      result[sss[i]] = tab[Math.floor(num / 58 ** i) % 58];
     }
+    return result.join('');
+  },
+  bv2av(bv) {
+    let result = 0;
+    for (let i = 0; i < 6; i++) {
+      result += tab.indexOf(bv[sss[i]]) * 58 ** i;
+    }
+    return `av${result - add ^ xor}`;
+  },
+  url2bv(url) {
+    return new Promise((resolve, reject) => {
+      request(url, {followAllRedirects: true}, (err, res) => {
+        if (err) reject(err);
+        resolve(path.parse(Url.parse(res.request.href).pathname).name);
+      });
+    });
+  }
 }
