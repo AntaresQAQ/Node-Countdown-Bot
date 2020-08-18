@@ -26,12 +26,14 @@ global.CountdownBot = {
   },
   async loadModules() {
     try {
-      let files = await fs.readdirSync(path.join(__dirname, "modules"));
-      files.filter(async (file) => (
-        await fsPromise.stat(path.join(__dirname, "modules", file))).isDirectory()).forEach((file) => {
-        this.modules[file] = require(path.join(__dirname, "modules", file));
-        console.log("Load Module " + file + " " + this.modules[file].version + " Succeed!");
-      });
+      let files = await fsPromise.readdir(path.join(__dirname, "modules"));
+      for (let file of files) {
+        if (!file.startsWith("__") &&
+          (await fsPromise.stat(path.join(__dirname, "modules", file))).isDirectory()) {
+          this.modules[file] = require(path.join(__dirname, "modules", file));
+          console.log("Load Module " + file + " " + this.modules[file].version + " Succeed!");
+        }
+      }
     } catch (e) {
       console.error(e);
     }
