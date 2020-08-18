@@ -29,7 +29,8 @@ global.CountdownBot = {
       let files = await fsPromise.readdir(path.join(__dirname, "modules"));
       for (let file of files) {
         if (!file.startsWith("__") &&
-          (await fsPromise.stat(path.join(__dirname, "modules", file))).isDirectory()) {
+          (await fsPromise.stat(path.join(__dirname, "modules", file))).isDirectory() &&
+          (await fsPromise.readdir(path.join(__dirname, "modules", file))).includes("index.js")) {
           this.modules[file] = require(path.join(__dirname, "modules", file));
           console.log("Load Module " + file + " " + this.modules[file].version + " Succeed!");
         }
