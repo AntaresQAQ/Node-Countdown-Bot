@@ -41,17 +41,17 @@ bot.groups.except(config.inactive_groups).plus(bot.discusses)
           throw new ErrorMsg("id对应的音乐不存在或无版权", meta);
         if (type === "raw") {
           await meta.$send(`[CQ:music,type=163,id=${id}]`);
-        } else {
-          let url = await CloudMusic.getMusicUrl(id);
+        } else if (type === "link") {
+          let url = await CloudMusic.getMusicUrl(id, 999000);
           if (!url) throw new ErrorMsg("无法取得音乐链接，请检查是否为VIP歌曲", meta);
-          if (type === "link") {
-            await meta.$send(url);
-          } else if (type === "record") {
-            let res = await axios.get(url, {responseType: "arraybuffer"});
-            let file = await CountdownBot.util.makeRecord(
-              Buffer.from(res.data, "binary"), "mp3");
-            await meta.$send(`[CQ:record,file=${file}]`);
-          }
+          await meta.$send(url);
+        } else if (type === "record") {
+          let url = await CloudMusic.getMusicUrl(id, 64000);
+          if (!url) throw new ErrorMsg("无法取得音乐链接，请检查是否为VIP歌曲", meta);
+          let res = await axios.get(url, {responseType: "arraybuffer"});
+          let file = await CountdownBot.util.makeRecord(
+            Buffer.from(res.data, "binary"), "m4a");
+          await meta.$send(`[CQ:record,file=${file}]`);
         }
         if (options.lyric) {
           let lyric = await CloudMusic.getMusicLyric(id);
@@ -68,17 +68,17 @@ bot.groups.except(config.inactive_groups).plus(bot.discusses)
         if (await CloudMusic.checkMusicAvailable(id)) {
           if (type === "raw") {
             await meta.$send(`[CQ:music,type=163,id=${id}]`);
-          } else {
-            let url = await CloudMusic.getMusicUrl(id);
+          } else if (type === "link") {
+            let url = await CloudMusic.getMusicUrl(id, 999000);
             if (!url) continue;
-            if (type === "link") {
-              await meta.$send(url);
-            } else if (type === "record") {
-              let res = await axios.get(url, {responseType: "arraybuffer"});
-              let file = await CountdownBot.util.makeRecord(
-                Buffer.from(res.data, "binary"), "mp3");
-              await meta.$send(`[CQ:record,file=${file}]`);
-            }
+            await meta.$send(url);
+          } else if (type === "record") {
+            let url = await CloudMusic.getMusicUrl(id, 64000);
+            if (!url) continue;
+            let res = await axios.get(url, {responseType: "arraybuffer"});
+            let file = await CountdownBot.util.makeRecord(
+              Buffer.from(res.data, "binary"), "m4a");
+            await meta.$send(`[CQ:record,file=${file}]`);
           }
           if (options.lyric) {
             let lyric = await CloudMusic.getMusicLyric(id);

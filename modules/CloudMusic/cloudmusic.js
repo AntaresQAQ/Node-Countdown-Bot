@@ -66,11 +66,11 @@ class CloudMusic {
     return res.data.success;
   }
 
-  async getMusicUrl(id) {
+  async getMusicUrl(id, br = 320000) {
     let res = await axios.get(this.config.api_url + "/song/url", {
       params: {
         id: id,
-        br: 320000
+        br: br
       },
       jar: cookieJar,
       withCredentials: true
