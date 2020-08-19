@@ -51,7 +51,8 @@ bot.groups.except(config.inactive_groups).plus(bot.discusses)
         pitch_rate: config.pitch_rate
       });
       if (!(result instanceof Buffer)) throw new ErrorMsg(result, meta);
-      await meta.$send(`[CQ:record,file=base64://${result.toString("base64")}]`);
+      let file = await CountdownBot.util.makeRecord(result, "wav");
+      await meta.$send(`[CQ:record,file=${file}]`);
     } catch (e) {
       CountdownBot.log(e)
     }

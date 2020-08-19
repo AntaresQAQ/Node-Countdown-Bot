@@ -36,7 +36,8 @@ class AliyunTTS {
       format: "wav"
     });
     let res = await axios.post("https://nls-gateway.cn-shanghai.aliyuncs.com/stream/v1/tts", data, {
-      headers: {"Content-Type": "application/json"}
+      headers: {"Content-Type": "application/json"},
+      responseType: "arraybuffer"
     });
     return Buffer.from(res.data, "binary");
   }
