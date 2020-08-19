@@ -14,7 +14,6 @@ const {VM} = require("vm2");
 const ffmpeg = require("fluent-ffmpeg");
 const Stream = require('stream');
 const Promise = require("bluebird");
-const tmpPromise = require("tmp-promise");
 const md5 = require("md5");
 
 module.exports = {
@@ -53,27 +52,22 @@ module.exports = {
     });
     return vm.run(code);
   },
-  async makeRecord(buffer, format) {
-    let bufferMD5 = md5(buffer);
-    let target = await tmpPromise.file();
-    await new Promise((resolve, reject) => {
+  makeRecord(buffer, format) {
+    return new Promise((resolve, reject) => {
+      let file = md5(buffer) + ".amr";
+      let target = path.join(CountdownBot.config.cqhttp_path, "data", "voices", file);
       let stream = new Stream.Duplex();
       stream.push(buffer);
       stream.push(null);
       ffmpeg().input(stream)
         .inputFormat(format)
-        .output(target.path)
+        .output(target)
         .audioFrequency(8000)
         .audioBitrate("12.20k")
         .audioChannels(1)
         .format("amr")
-        .on("end", resolve)
+        .on("end", () => resolve(file))
         .on("error", (err) => reject(err)).run();
     });
-    let result = bufferMD5 + ".amr";
-    await fsPromise.copyFile(target.path,
-      path.join(CountdownBot.config.cqhttp_path, "data", "voices", result));
-    await target.cleanup();
-    return result;
   }
 };
