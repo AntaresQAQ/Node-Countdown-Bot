@@ -5,13 +5,23 @@ global.ErrorMsg = class ErrorMsg {
   }
 }
 
-const fsPromise = require("fs-extra").promises;
+const fs = require("fs-extra");
+const fsPromise = fs.promises;
 const path = require("path");
 const qs = require("querystring");
 const axios = require("axios");
 const {VM} = require("vm2");
+const ffmpeg = require("fluent-ffmpeg");
+const Stream = require('stream');
+const Promise = require("bluebird");
+const crypto = require('crypto');
+const tmpPromise = require("tmp-promise");
 
 module.exports = {
+  randomString(length = 32) {
+    if (!Number.isFinite(length)) throw new TypeError('Expected a finite number');
+    return crypto.randomBytes(Math.ceil(length / 2)).toString('hex').slice(0, length);
+  },
   async clearDir(filePath) {
     for (let file of await fsPromise.readdir(filePath)) {
       if ((await fsPromise.stat(path.join(filePath, file))).isDirectory()) {
@@ -46,5 +56,27 @@ module.exports = {
       timeout: timeLimit || 1000,
     });
     return vm.run(code);
+  },
+  async makeRecord(buffer, format) {
+    let target = await tmpPromise.file();
+    await new Promise((resolve, reject) => {
+      let stream = new Stream.Duplex();
+      stream.push(buffer);
+      stream.push(null);
+      ffmpeg().input(stream)
+        .inputFormat(format)
+        .output(target.path)
+        .audioFrequency(8000)
+        .audioBitrate("12.20k")
+        .audioChannels(1)
+        .format("amr")
+        .on("end", resolve)
+        .on("error", (err) => reject(err)).run();
+    });
+    let result = this.randomString() + ".amr";
+    await fsPromise.copyFile(target.path,
+      path.join(CountdownBot.config.cqhttp_path, "data", "voices", result));
+    await target.cleanup();
+    return result;
   }
 };

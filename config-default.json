@@ -6,6 +6,7 @@
     "token": "",
     "secret": ""
   },
+  "cqhttp_path": "/path/to/cqhttp",
   "commandPrefix": [
     "--",
     "!!"
