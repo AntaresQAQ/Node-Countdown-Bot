@@ -14,14 +14,10 @@ const {VM} = require("vm2");
 const ffmpeg = require("fluent-ffmpeg");
 const Stream = require('stream');
 const Promise = require("bluebird");
-const crypto = require('crypto');
 const tmpPromise = require("tmp-promise");
+const md5 = require("md5");
 
 module.exports = {
-  randomString(length = 32) {
-    if (!Number.isFinite(length)) throw new TypeError('Expected a finite number');
-    return crypto.randomBytes(Math.ceil(length / 2)).toString('hex').slice(0, length);
-  },
   async clearDir(filePath) {
     for (let file of await fsPromise.readdir(filePath)) {
       if ((await fsPromise.stat(path.join(filePath, file))).isDirectory()) {
@@ -58,6 +54,7 @@ module.exports = {
     return vm.run(code);
   },
   async makeRecord(buffer, format) {
+    let bufferMD5 = md5(buffer);
     let target = await tmpPromise.file();
     await new Promise((resolve, reject) => {
       let stream = new Stream.Duplex();
@@ -73,7 +70,7 @@ module.exports = {
         .on("end", resolve)
         .on("error", (err) => reject(err)).run();
     });
-    let result = this.randomString() + ".amr";
+    let result = bufferMD5 + ".amr";
     await fsPromise.copyFile(target.path,
       path.join(CountdownBot.config.cqhttp_path, "data", "voices", result));
     await target.cleanup();
