@@ -51,6 +51,7 @@ bot.plugin(commonPlugin, {
   info: false,
   exec: false,
   exit: false,
+  echo: false,
   welcomeMessage: false,
   repeater: {
     repeat: (repeated, times) => times === config.repeat_times,
