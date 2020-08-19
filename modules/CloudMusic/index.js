@@ -48,7 +48,8 @@ bot.groups.except(config.inactive_groups).plus(bot.discusses)
             await meta.$send(url);
           } else if (type === "record") {
             let res = await axios.get(url, {responseType: "arraybuffer"});
-            let file = CountdownBot.util.makeRecord(Buffer.from(res.data, "binary"));
+            let file = await CountdownBot.util.makeRecord(
+              Buffer.from(res.data, "binary"), "mp3");
             await meta.$send(`[CQ:record,file=${file}]`);
           }
         }
@@ -74,7 +75,8 @@ bot.groups.except(config.inactive_groups).plus(bot.discusses)
               await meta.$send(url);
             } else if (type === "record") {
               let res = await axios.get(url, {responseType: "arraybuffer"});
-              let file = await CountdownBot.util.makeRecord(Buffer.from(res.data, "binary"), "mp3");
+              let file = await CountdownBot.util.makeRecord(
+                Buffer.from(res.data, "binary"), "mp3");
               await meta.$send(`[CQ:record,file=${file}]`);
             }
           }
