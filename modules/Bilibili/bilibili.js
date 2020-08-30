@@ -1,7 +1,6 @@
-// const request = require("request");
-// const Promise = require("bluebird");
-// const Url = require("url");
-// const path = require("path");
+const Url = require("url");
+const path = require("path");
+const axios = require("axios");
 
 const tab = [...'fZodR9XQDSUm21yCkr6zBqiveYah8bt4xsWpHnJE7jL5VG3guMTKNPAwcF'];
 const sss = [11, 10, 3, 8, 4, 6];
@@ -25,17 +24,18 @@ module.exports = {
       result += tab.indexOf(bv[sss[i]]) * 58 ** i;
     }
     return `av${result - add ^ xor}`;
-  }/*,
+  },
   async url2bv(url) {
-    let res = await axios.request({
-      url: url
+    let res = await axios.get(url, {
+      headers: {
+        "Accept": "application/json, text/plain, */*",
+        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) " +
+          "AppleWebKit/537.36 (KHTML, like Gecko) " +
+          "Chrome/81.0.4044.122 Safari/537.36",
+        "Accept-Encoding": "gzip, deflate, br",
+        "Accept-Language": "zh-CN,zh;q=0.9"
+      }
     });
-    console.log(res);
-    return new Promise((resolve, reject) => {
-      request(url, {followAllRedirects: true}, (err, res) => {
-        if (err) reject(err);
-        resolve(path.parse(Url.parse(res.request.href).pathname).name);
-      });
-    });
-  }*/
+    return path.parse(Url.parse(res.config.url).pathname).base;
+  }
 }

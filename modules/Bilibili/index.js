@@ -26,14 +26,14 @@ bot.command("avbv <id>", "AV号BV号互转")
       CountdownBot.log(e);
     }
   });
-/*
+
 bot.groups.receiver.on("message", async (meta) => {
   try {
-    let search = /\[CQ:rich,content=([^,]+),title=([^,]+)]/g.exec(meta.message);
+    let search = /^[\s\S]*QQ小程序[\s\S]*哔哩哔哩[\s\S]*请使用最新版本手机QQ查看([\s\S]+)$/g.exec(meta.message);
     if (!search) return;
-    let content = JSON.parse(CQCode.unescape(search[1]));
-    if (content.detail_1.appid !== "1109937557") return;
-    let bv = await Bilibili.url2bv(content.detail_1.qqdocurl)
+    let content = JSON.parse(CQCode.unescape(search[1]))["meta"];
+    if (content["detail_1"]["appid"] !== "1109937557") return;
+    let bv = await Bilibili.url2bv(content["detail_1"]["qqdocurl"]);
     if (config.using_av) {
       await meta.$send(Bilibili.bv2av(bv));
     } else {
@@ -43,7 +43,7 @@ bot.groups.receiver.on("message", async (meta) => {
     CountdownBot.log(e);
   }
 });
-*/
+
 module.exports = {
   author: "Antares",
   version: "1.0",
