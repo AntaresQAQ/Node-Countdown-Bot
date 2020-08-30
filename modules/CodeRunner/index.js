@@ -79,10 +79,15 @@ bot.groups.except(config.inactive_groups)
       });
       await container.start();
 
-      let TLE = () => new Promise(async (resolve) => {
-        setTimeout(() => resolve(true), config.time_limit);
-        await container.wait();
-        resolve(false);
+      let TLE = () => new Promise((resolve, reject) => {
+        let timeout = setTimeout(() => resolve(true), config.time_limit);
+        container.wait().then(() => {
+          clearTimeout(timeout);
+          resolve(false)
+        }).catch(reason => {
+          clearTimeout(timeout);
+          reject(reason);
+        });
       });
 
       if (await TLE()) {
