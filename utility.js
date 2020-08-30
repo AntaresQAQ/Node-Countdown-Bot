@@ -43,7 +43,7 @@ module.exports = {
         "Accept-Language": "zh-CN,zh;q=0.9"
       }
     });
-    return "https://paste.ubuntu.com" + res.request.path;
+    return res.config.url;
   },
   vmRun(code, timeLimit) {
     let vm = new VM({
