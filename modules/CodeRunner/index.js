@@ -88,7 +88,7 @@ bot.groups.except(config.inactive_groups)
       if (await TLE()) {
         await container.kill();
         await container.remove();
-        await bot.util.clearDir(tmpDir.path);
+        await CountdownBot.util.clearDir(tmpDir.path);
         await tmpDir.cleanup();
         throw new ErrorMsg("Time Limit Exceeded", meta);
       }
@@ -98,13 +98,13 @@ bot.groups.except(config.inactive_groups)
       if (await fsExists(path.join(tmpDir.path, running_id + "_ok"))) {
         let error_info = await fsExists(path.join(tmpDir.path, "stderr")) ? "Unknown Error" :
           await fsPromise.readFile(path.join(tmpDir.path, "stderr"), {flag: "r"})
-        await bot.util.clearDir(tmpDir.path);
+        await CountdownBot.util.clearDir(tmpDir.path);
         await tmpDir.cleanup();
         throw new ErrorMsg(error_info.toString().substr(0, config.output_limit), meta);
       }
 
       let result = (await fsPromise.readFile(path.join(tmpDir.path, "stdout"), {flag: "r"})).toString();
-      await bot.util.clearDir(tmpDir.path);
+      await CountdownBot.util.clearDir(tmpDir.path);
       await tmpDir.cleanup();
       if (result.length === 0) {
         await meta.$send("无输出");
