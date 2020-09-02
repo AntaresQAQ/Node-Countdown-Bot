@@ -56,19 +56,25 @@ module.exports = {
     return new Promise((resolve, reject) => {
       let file = md5(buffer) + ".amr";
       let target = path.join(CountdownBot.config.cqhttp_path, "data", "voices", file);
-      let stream = new Stream.Duplex();
-      stream.push(buffer);
-      stream.push(null);
-      ffmpeg().input(stream)
-        .inputFormat(format)
-        .output(target)
-        .audioFrequency(8000)
-        .audioBitrate("12.20k")
-        .audioChannels(1)
-        .duration(600)
-        .format("amr")
-        .on("end", () => resolve(file))
-        .on("error", (err) => reject(err)).run();
+      fs.access(target,fs.constants.F_OK,err => {
+        if(err) {
+          let stream = new Stream.Duplex();
+          stream.push(buffer);
+          stream.push(null);
+          ffmpeg().input(stream)
+            .inputFormat(format)
+            .output(target)
+            .audioFrequency(8000)
+            .audioBitrate("12.20k")
+            .audioChannels(1)
+            .duration(600)
+            .format("amr")
+            .on("end", () => resolve(file))
+            .on("error", (err) => reject(err)).run();
+        } else {
+          resolve(file);
+        }
+      });
     });
   }
 };
