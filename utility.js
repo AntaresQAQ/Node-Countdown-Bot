@@ -65,6 +65,7 @@ module.exports = {
         .audioFrequency(8000)
         .audioBitrate("12.20k")
         .audioChannels(1)
+        .duration(600)
         .format("amr")
         .on("end", () => resolve(file))
         .on("error", (err) => reject(err)).run();
