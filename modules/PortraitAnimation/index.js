@@ -25,7 +25,7 @@ bot.command("anime <...image>", "人像动漫化")
         bot.onceMiddleware(async (meta1) => {
           try {
             search = imageRE.exec(meta1.message);
-            if (!search) return;
+            if (!search) throw new ErrorMsg(`[CQ:at,qq=${meta1.userId}] 您发送的不是图片!`, meta1);
             let imageUrl = search[2];
             let res = await axios.get(imageUrl, {responseType: "arraybuffer"});
             let imageBase64 = Buffer.from(res.data).toString("base64");
