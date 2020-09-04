@@ -22,10 +22,10 @@ bot.command("anime <...image>", "人像动漫化")
       let search = imageRE.exec(image);
       if (!search) {
         await meta.$send(`[CQ:at,qq=${meta.userId}] 请发送一张图片`);
-        bot.onceMiddleware(async (meta1, next) => {
+        bot.onceMiddleware(async (meta1) => {
           try {
             search = imageRE.exec(meta1.message);
-            if (!search) next();
+            if (!search) return;
             let imageUrl = search[2];
             let res = await axios.get(imageUrl, {responseType: "arraybuffer"});
             let imageBase64 = Buffer.from(res.data).toString("base64");
