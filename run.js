@@ -45,8 +45,9 @@ global.CountdownBot = {
     await fsPromise.mkdir(this.dataDir, {recursive: true});
     // noinspection JSUndefinedPropertyAssignment
 
-    global.bot = new App(this.config.koishi);
-    bot.options.commandPrefix = this.config.commandPrefix;
+    global.bot = new App(objectAssignDeep({}, this.config.koishi, {
+      commandPrefix: this.config.commandPrefix,
+    }));
 
     await this.loadModules();
 
