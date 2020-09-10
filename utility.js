@@ -54,7 +54,7 @@ module.exports = {
   },
   makeRecord(buffer, format) {
     return new Promise((resolve, reject) => {
-      let file = md5(buffer) + ".amr";
+      let file = md5(buffer).toUpperCase() + ".amr";
       let target = path.join(CountdownBot.config.cqhttp_path, "data", "voices", file);
       fs.access(target, fs.constants.F_OK, err => {
         if (err) {
