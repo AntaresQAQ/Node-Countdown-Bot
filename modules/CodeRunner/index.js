@@ -10,15 +10,15 @@ const configDefault = {
 };
 
 const config = CountdownBot.loadConfig(__dirname, configDefault);
-const langs = require("./langs.json");
+const Langs = require("./langs.json");
 const tmpPromise = require("tmp-promise");
 const fs = require("fs-extra");
 const fsPromise = fs.promises;
 const path = require("path");
-const Docker = require("dockerode");
-const docker = new Docker();
-const {CQCode} = require("koishi");
 const Promise = require("bluebird");
+const Docker = require("dockerode");
+const docker = new Docker({Promise: Promise});
+const {CQCode} = require("koishi");
 
 function fsExists(filePath) {
   return new Promise((resolve) => {
@@ -31,9 +31,9 @@ function fsExists(filePath) {
 
 function generateHelp() {
   let buffers = [Buffer.from("语言ID: 描述\n")];
-  for (let lang in langs) {
+  for (let lang in Langs) {
     // noinspection JSUnfilteredForInLoop
-    buffers.push(Buffer.from(`${lang}: ${langs[lang].description}\n`));
+    buffers.push(Buffer.from(`${lang}: ${Langs[lang].description}\n`));
   }
   return Buffer.concat(buffers).toString();
 }
@@ -49,11 +49,11 @@ bot.groups.except(config.inactive_groups)
         await meta.$send(generateHelp());
         return;
       }
-      let running_id = parseInt(Math.random() * 1000000);
+      let running_id = Math.ceil(Math.random() * 1000000);
       code = CQCode.unescape(code);
       let tmpDir = await tmpPromise.dir();
-      if (!langs[options.lang]) throw new ErrorMsg("不支持的语言", meta);
-      let lang = langs[options.lang];
+      if (!Langs[options.lang]) throw new ErrorMsg("不支持的语言", meta);
+      let lang = Langs[options.lang];
       await fsPromise.writeFile(path.join(tmpDir.path, lang.source), code);
       let command = (lang.compile ? lang.compile + " > stderr 2>&1 && " : "") +
         lang.run + " 1> stdout 2>> stderr && touch " + running_id + "_ok";
@@ -74,7 +74,7 @@ bot.groups.except(config.inactive_groups)
           ],
           Memory: config.memory_limit,
           MemorySwap: config.memory_limit,
-          NanoCPUs: parseInt(config.cpu_limit / 1e-9),
+          NanoCPUs: Math.ceil(config.cpu_limit / 1e-9)
         }
       });
       await container.start();
