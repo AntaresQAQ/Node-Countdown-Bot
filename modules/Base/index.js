@@ -8,6 +8,7 @@ const configDefault = {
 
 const config = CountdownBot.loadConfig(__dirname, configDefault);
 const {commonPlugin} = require("koishi");
+const chessPlugin = require("koishi-plugin-chess");
 
 bot.command("modules", "查看模块列表")
   .alias("模块")
@@ -62,6 +63,8 @@ bot.plugin(commonPlugin, {
   handleGroupAdd: config.handleGroupAdd,
   handleGroupInvite: config.handleGroupInvite
 });
+
+bot.plugin(chessPlugin);
 
 module.exports = {
   author: "Antares",
