@@ -14,16 +14,8 @@ function makeLocationJSON(lng, lat, address, name) {
     ver: "0.0.0.1",
     prompt: "[应用]地图",
     from: 1,
-    meta: {
-      "Location.Search": {
-        name, address, lat, lng,
-      }
-    },
-    config: {
-      forward: 1,
-      autosize: 1,
-      type: "card"
-    }
+    meta: {"Location.Search": {name, address, lat, lng,}},
+    config: {forward: 1, autosize: 1, type: "card"}
   });
 }
 
