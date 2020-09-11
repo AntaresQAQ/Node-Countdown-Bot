@@ -29,15 +29,9 @@ bot.command("avbv <id>", "AV号BV号互转")
 
 bot.groups.receiver.on("message", async (meta) => {
   try {
-    let search = /^([\s\S]*QQ小程序[\s\S]*哔哩哔哩[\s\S]*请使用最新版本手机QQ查看)?(\{[\s\S]+})$/g.exec(meta.message);
+    let search = /^(&#91;&#91;QQ小程序&#93;哔哩哔哩&#93;请使用最新版本手机QQ查看)?\[CQ:json,data=([^\]]+)]$/g.exec(meta.message);
     if (!search) return;
-    let content;
-    try {
-      content = JSON.parse(CQCode.unescape(search[2]))["meta"]["detail_1"];
-    } catch (e) {
-      return;
-    }
-    if (!content) return;
+    let content = JSON.parse(CQCode.unescape(search[2]))["meta"]["detail_1"];
     if (content["appid"] !== "1109937557") return;
     let bv = await Bilibili.url2bv(content["qqdocurl"]);
     if (config.using_av) {
