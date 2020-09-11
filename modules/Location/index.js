@@ -59,7 +59,7 @@ bot.command("where <keywords...>", "高德地图搜索")
         for (let i = 0; i < result["pois"].length && i < 5; i++) {
           let item = result["pois"][i];
           buffers.push(Buffer.from(
-            `ID: ${item.id} | 名称: ${item.name} | 地址: ${item.address} | 类型: ${item.type}\n`));
+            `ID: ${item.id} | 名称: ${item.name} | 地址: ${item.address} | 类型: ${item.type}\n\n`));
         }
         await meta.$send(Buffer.concat(buffers).toString());
       }
