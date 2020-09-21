@@ -13,6 +13,7 @@ bot.groups.except(config.inactive_groups)
   .command("sign-in", "签到")
   .alias("签到")
   .shortcut("签到", {prefix: !config.NoPrefix})
+  .shortcut("签到儿", {prefix: !config.NoPrefix})
   .action(async ({meta}) => {
       try {
         let groupId = parseInt(meta.groupId);
