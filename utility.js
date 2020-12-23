@@ -11,10 +11,6 @@ const path = require("path");
 const qs = require("querystring");
 const axios = require("axios");
 const {VM} = require("vm2");
-const ffmpeg = require("fluent-ffmpeg");
-const Stream = require('stream');
-const Promise = require("bluebird");
-const md5 = require("md5");
 
 module.exports = {
   async clearDir(filePath) {
@@ -51,30 +47,5 @@ module.exports = {
       timeout: timeLimit || 1000,
     });
     return vm.run(code);
-  },
-  makeRecord(buffer, format) {
-    return new Promise((resolve, reject) => {
-      let file = md5(buffer).toUpperCase() + ".amr";
-      let target = path.join(CountdownBot.config.cqhttp_path, "data", "voices", file);
-      fs.access(target, fs.constants.F_OK, err => {
-        if (err) {
-          let stream = new Stream.Duplex();
-          stream.push(buffer);
-          stream.push(null);
-          ffmpeg().input(stream)
-            .inputFormat(format)
-            .output(target)
-            .audioFrequency(8000)
-            .audioBitrate("12.20k")
-            .audioChannels(1)
-            .duration(600)
-            .format("amr")
-            .on("end", () => resolve(file))
-            .on("error", (err) => reject(err)).run();
-        } else {
-          resolve(file);
-        }
-      });
-    });
   }
 };
