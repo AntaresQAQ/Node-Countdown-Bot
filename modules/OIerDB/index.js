@@ -17,7 +17,7 @@ bot.command("oier <name...>", "OIerDB(http://bytew.net/OIer)查询")
         let item = items[i];
         buffers.push(Buffer.from(
           `\n姓名: ${item.name}\n生理性别: ${{"-1": "女", "1": "男"}[item.sex] || "未知"}\n`));
-        let awards = CountdownBot.util.vmRun(item.awards);
+        let awards = JSON.parse(item.awards.replace(/'/g, '"'));
         for (let award of awards) {
           buffers.push(Buffer.from(
             `在<${award.province}>${award.school}<${award.grade}>时参加` +
